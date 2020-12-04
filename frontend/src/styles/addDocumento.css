@@ -1,0 +1,114 @@
+#page-addDocumento main {
+    width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--azul3);
+    padding-bottom: 24px;
+    border-radius: 24px;
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.25);
+}
+
+#page-addDocumento main .row-title {
+    display: grid;
+    grid-template-columns: 130px 360px 1fr;
+    grid-gap: 12px;
+    width: 100%;
+    padding: 0px 40px;
+    border-bottom: 2px solid var(--azul1);
+}
+
+#page-addDocumento main .row-title h3 {
+    min-height: 45px;
+    font-size: 18px;
+    text-align: justify;
+    background-color: var(--azul2);
+    border: 2px solid var(--azulOutline);
+    border-radius: 32px;
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.25));
+    color: white;
+    font-weight: 400;
+    
+    margin: 30px 0 16px 0;
+    padding: 6px 20px;    
+    border-radius: 16px;
+}
+
+#page-addDocumento main article {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 2px solid var(--azul1);
+}
+
+#page-addDocumento main article aside {
+    padding: 20px 32px;
+}
+
+#page-addDocumento main article aside:first-child {
+    border-right: 2px solid var(--azul1);
+}
+
+#page-addDocumento main article aside div{
+    display: flex;
+    justify-content: space-between;
+    align-items: top;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--azul2);
+}
+
+#page-addDocumento main article aside div label{
+    color: white;
+    margin-right: 6px;
+    text-align: justify;
+}
+
+#page-addDocumento main article aside div textarea{
+    max-width: 400px;
+    max-height: 180px;
+    flex: 1;
+    height: 70px;
+    border: 2px solid var(--azulOutline);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 18px;
+}
+
+#page-addDocumento main section {
+    display: flex;
+    flex-direction: column;
+}
+
+#page-addDocumento main section button{
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+#page-addDocumento main section.buttons{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#page-addDocumento main section.buttons div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+#page-addDocumento main section.buttons div button {
+    border-radius: 100%;
+}
+
+#page-addDocumento main section.buttons div button.enviarBtn:hover{
+    box-shadow: 0 0 4px 4px green;
+}
+#page-addDocumento main section.buttons div button.anexarBtn:hover{
+    box-shadow: 0 0 4px 4px var(--vermelho);
+}

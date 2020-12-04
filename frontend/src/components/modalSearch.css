@@ -1,0 +1,100 @@
+#modal-search {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    z-index: 1;
+}
+  
+
+#modal-search .container {
+    display: block !important;
+    width: 650px;
+    height: 450px;
+    margin: auto; 
+    padding: 12px;
+} 
+
+#modal-search .container h1 {
+    text-align: center;
+    font-size: 72px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-bottom: 45px;
+}
+
+#modal-search .container section {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#modal-search .container section h3 {
+    height: 45px;
+    width: 150px;
+    font-size: 18px;
+    text-align: center;
+    background-color: var(--azul2);
+    border: 2px solid var(--azulOutline);
+    border-radius: 32px;
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.25));
+    color: white;
+    font-weight: 400;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    padding: 0 20px;    
+    border-radius: 16px;
+    margin-right: 12px;
+}
+
+#modal-search .container section input {
+    height: 45px;
+    width: 380px;
+    font-size: 18px;
+    text-align: left;
+    background-color: white;
+    border: 2px solid var(--azulOutline);
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.25));
+    color: black;
+    font-weight: 400;
+    display: flex;
+    justify-content: left;
+    align-items: center;  
+    padding: 0 16px;    
+    border-radius: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#modal-search .container section.buttons button{
+    width: 48px;
+    height: 48px;
+    border-radius: 100%;
+    margin: 0 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#modal-search .container section.buttons button.exitBtn{
+    background-color: var(--vermelho);
+}
+
+#modal-search .container section.buttons button.searchBtn{
+    background-color: #27AE60;
+}
+
+
+#modal-search .container section.buttons button.exitBtn:hover{
+    transition: 0.5s;
+    box-shadow: 0 0 4px 4px var(--vermelho);
+}
+#modal-search .container section.buttons button.searchBtn:hover{
+    transition: 0.5s;
+    box-shadow: 0 0 4px 4px #27AE60;
+}

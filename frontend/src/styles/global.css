@@ -1,0 +1,66 @@
+:root {
+    
+    --vermelho: #EB5757;
+    --azul1: #2F80ED;
+    --azul2: #2D9CDB;
+    --azul3: #56CCF2;
+    
+    --azulOutline: #5F8BFF;
+    --brancoOutline: #E6EDFF;
+    --cinzaTextDisabled: #B7B7B7;
+    --cinzaLabel: #726060;
+    --cinzaBackground: #F7F7F7;
+
+    --cinzaBarraFormPadrao: #E0E0E0;
+    --bgCriarFormPadrao: #DCE4E7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*:focus {
+    outline: none;
+}
+
+body {
+    background-color: var(--cinzaBackground);
+}
+
+body, button, input, textarea {
+    font: 400 18px Roboto, sans-serif;
+}
+
+input {
+    border-radius: 16px;
+    background-color: white;
+    border: 2px solid var(--azulOutline);
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.25));
+    font-size: 18px;
+    padding: 6px 20px;
+}
+
+input:focus,textarea:focus {
+    box-shadow: 0 0 3pt 2pt var(--azulOutline);    
+    outline: none;
+}
+
+button{
+    color: white;
+    background-color: var(--azul1);
+    border: var(--brancoOutline) solid 2px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+a:hover, button:hover {
+    transition: 0.5s;
+    box-shadow: 0 0 4px 4px var(--azul1);
+}
+
+.icon{
+    color: var(--azulOutline);
+}
