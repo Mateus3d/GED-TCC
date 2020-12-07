@@ -10,35 +10,78 @@ import '../styles/funcionarios.css'
 function Funcionarios() {
 
   const [qntFunc, setQntFunc] = useState(0)
-  const [listFunc, setListFunc] = useState([])
+  //const [listFunc, setListFunc] = useState([])
   const [listaFuncionarios, setListaFuncionarios] = useState([])
 
-  const [identificador, setIdentificador] = useState('')
-  const [nome, setNome] = useState('')
-  const [area, setArea] = useState('')
-  const [login, setLogin] = useState('')
-  const [senha, setSenha] = useState('')
+  const [identificador, setIdentificador] = useState([])
+  const [nome, setNome] = useState([])
+  const [area, setArea] = useState([])
+  const [login, setLogin] = useState([])
+  const [senha, setSenha] = useState([])
+  //const [funcionario, setFuncionario] = useState([])
 
   useEffect(() => {
     api.get('/funcionarios')
       .then(res => {
         console.log(res.data)
-        setListaFuncionarios(res.data)
+        let ids = [], nomes = [], areas = [], logins = [], senhas = [], funcionarios = []
+        res.data.map((item, i) => {
+          ids.push(item.identificador)
+          nomes.push(item.nome)
+          areas.push(item.area)
+          logins.push(item.username)
+          senhas.push(item.senha)
+          funcionarios.push({ identificador: ids[i], nome: nomes[i], area: areas[i], username: logins[i], senha: senhas[i] })
+        })
+        setIdentificador(ids)
+        setNome(nomes)
+        setArea(areas)
+        setLogin(logins)
+        setSenha(senhas)
+        setListaFuncionarios(funcionarios)
+
+        /* console.log('nomes: ', nome)
+        console.log('ids: ', identificador)
+        console.log('areas: ', area)
+        console.log('logins: ', login)
+        console.log('senhas: ', senha)
+        console.log('funcionarios: ', listaFuncionarios) */
+        /* 
+        console.log('ids: ',ids)
+        console.log('areas: ',areas)
+        console.log('logins: ',logins)
+        console.log('senhas: ',senhas) */
+
+        //setListaFuncionarios(res.data)
+
+        //console.log(listaFuncionarios)
       }).catch(e => { alert('Erro!!') })
+    console.log('nomes: ', nome)
+    console.log('ids: ', identificador)
+    console.log('areas: ', area)
+    console.log('logins: ', login)
+    console.log('senhas: ', senha)
+    console.log('funcionarios: ', listaFuncionarios)
   }, [])
 
-  function handleOnChange() {
-    function handleId(e) {
-      
-    }
+  function handleOnChange(e) {
+    identificador[e.target.id] = e.target.value
+    setIdentificador([...identificador])
+    console.log('mudando')
+
+    /* function handleId(e) {
+
+    } */
   }
 
   function addFuncHandler() {
-    console.log('Apertou o butão!')
+    //console.log('Apertou o butão!')
     setQntFunc(qntFunc + 1)
-    console.log(qntFunc)
-    setListFunc([<LinhaFuncionario key={qntFunc} />, ...listFunc]) //Assim põe ao contrário
-    console.log(listFunc)
+    //console.log(qntFunc)
+    setListaFuncionarios([{ identificador: '', nome: '', area: '', username: '', senha: '' }, ...listaFuncionarios])
+    console.log(listaFuncionarios)
+    //setListFunc([<LinhaFuncionario key={qntFunc} />, ...listFunc]) //Assim põe ao contrário
+    //console.log(listFunc)
   }
 
   /*  function removeFuncHandler() {
@@ -70,15 +113,16 @@ function Funcionarios() {
 
           </div>
 
-          {listFunc}
+          {/* {listFunc} */}
 
           {listaFuncionarios.map((linha, i) => {
-            return (<LinhaFuncionario key={i} id={linha.identificador} nome={linha.nome}
-              area={linha.area} login={linha.username} senha={linha.senha}
+            return (
+              <LinhaFuncionario key={i} id={i} ident={identificador[i]} nome={linha.nome}
+                area={linha.area} login={linha.username} senha={linha.senha}
               funcOnChange={handleOnChange}
               /* funcId={handleId} funcNome={handleNome} funcArea={handleArea}
               funcLogin={handleLogin} funcSenha={handleSenha} */
-            />)
+              />)
           })}
 
 

@@ -13,8 +13,15 @@ function Documentos() {
   const [showAddDoc, setShowAddDoc] = useState(false)
   const [documentos, setDocumentos] = useState([])
   const [docsPadrao, setDocsPadrao] = useState([])
+  const [admBool,setAdmBool] = useState(false)
 
   useEffect(() => {
+    const adm = localStorage.getItem('adm')
+    if (adm === 'true'){
+      setAdmBool(true)
+    } else {
+      setAdmBool(false)
+    }
     api.get('/documentos').then(response => {
       setDocumentos(response.data.reverse()) //Os dados já vêm em forma de array, por isso posso passar direto, só invertendo para q o ultimo seja o primeiro
     })
@@ -66,11 +73,12 @@ function Documentos() {
           {documentos.map(item => {
             return (<LinhaDocumento 
                         key={item._id} 
+                        id={item._id}
                         identificador={item.docPadrao.identificador} 
                         titulo={item.docPadrao.titulo}
                         descricao={item.docPadrao.descricao}
                         data={dateFormat(item.data, "dd/mm/yyyy")}
-                        adm={true} 
+                        adm={admBool} 
                         remove={() => handleRemoveDocumento(item._id)}
                     />)
                     

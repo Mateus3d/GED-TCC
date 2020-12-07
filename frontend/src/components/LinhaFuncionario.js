@@ -15,8 +15,9 @@ function LinhaFuncionario(props) {
     <div className="row-funcionario">
       <input disabled={!edita}
         style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={props.id}
-        onChange={e => {props.id = e.target.value}}
+        id={props.i}
+        value={props.ident}
+        onChange={props.funcOnChange}
       />
       <input disabled={!edita}
         style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}

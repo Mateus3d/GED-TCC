@@ -11,9 +11,9 @@ function MenuAdm({history}) {
     const adm = localStorage.getItem('adm')
     console.log(adm)
     if (adm==='false') {
-      //history.push('/documentos')
-      console.log('sai daqui')
       history.push('/documentos')
+    } else if (adm === null) {
+      history.push('/') //dps defino isso direito
     }
   },[])
 

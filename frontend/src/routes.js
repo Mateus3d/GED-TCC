@@ -9,6 +9,7 @@ import CriarPadrao from './pages/CriarPadrao'
 import Funcionarios from './pages/Funcionarios'
 import Auditoria from './pages/Auditoria'
 import Verificacao from './pages/Verificacao'
+import VEDocumento from './pages/VEDocumento'
 
 function Routes() {
   return (
@@ -23,6 +24,7 @@ function Routes() {
         <Route path='/funcionarios' exact component={Funcionarios} />
         <Route path='/auditoria' exact component={Auditoria} />
         <Route path='/verificacao' exact component={Verificacao} />
+        <Route path='/documento' exact component={VEDocumento} /> {/* Gambiarra pura, mas fzr oq */}
 
       </Switch>
     </BrowserRouter>

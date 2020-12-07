@@ -40,7 +40,10 @@ function Cadastro() {
         <main className='main-content'>
           <form onSubmit={handleSubmit}>
             <h2>Cadastro</h2>
-            <input placeholder="CNPJ" value={cnpj} onChange={e =>{setcnpj(e.target.value)}} />
+            <input placeholder="CNPJ" type='number' 
+              value={cnpj} 
+              onChange={e =>{setcnpj(e.target.value)}}              
+            />
             <input placeholder="Login" value={username} onChange={e =>{setUsername(e.target.value)}} />
             <input placeholder="Senha" 
               type='password'

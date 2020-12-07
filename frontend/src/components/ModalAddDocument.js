@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Paperclip, Search, XCircle } from 'react-feather'
+import { useHistory } from 'react-router-dom'
 import './modalAddDocument.css'
 
 function ModalAddDocument(props) {
    //const [documentosPadrao, setDocsPadrao] = useState([])
+   const history = useHistory()
+   function handleClickDoc(e) {
+    localStorage.setItem('docPadrao_id', e.target.id)
+    history.push('/adicionardocumento')
+
+   }
 
   return (
     <>
@@ -20,7 +27,8 @@ function ModalAddDocument(props) {
               <Paperclip />
             </button>
             {props.docs.map(item => {
-              return (<button key={item._id}>{item.identificador} {item.titulo}</button>)
+              return (<button key={item._id} id={item._id} 
+                onClick={handleClickDoc}>{item.identificador} {item.titulo}</button>)
             })}
             <button>FR02 Limpeza da Cuba de Cana</button>
             {/* <button>{props.identificador} {props.titulo}</button> */}

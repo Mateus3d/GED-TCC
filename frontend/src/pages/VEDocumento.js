@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 
 //A confirmação ou negação serão feitos nessa tela mesma posteriormente
 //Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
-function AddDocumento() {
+function VEDocumento() {
   //useEffect carregando os dados
   //states dos inputs
   //funcao pra fzr o post e mudar de tela
@@ -18,33 +18,37 @@ function AddDocumento() {
   const [listaLabels, setListaLabels] = useState([])
   const [listaInputs, setListaInputs] = useState([])
 
-  //const [docPadrao_id, setDocPadrao_id] = useState('')
+  //const [documento_id, setDocumento_id] = useState('')
+  let documento_id
+  //const documento_id
+
   const history = useHistory()
 
-  let docPadrao_id
-  //let docPadrao_id = '5fc96df642968027b0661b40' //Depois tornar dinamico!!!!!!!!!!!!
+  //const docPadrao_id = '5fc96df642968027b0661b40' //Depois tornar dinamico!!!!!!!!!!!!
 
   useEffect(() => {
-    //setDocPadrao_id(localStorage.getItem('docPadrao_id'))
-    docPadrao_id = localStorage.getItem('docPadrao_id')
-    console.log(docPadrao_id)
-    api.get(`/docPadrao?_id=${docPadrao_id}`).then(res => { //Tenho q descobrir como passar por aqui. Provavelmente pelo localStorage
-      setIdentificador(res.data[0].identificador) //Só vem um doc em array, por isso colocar [0]
-      setTitulo(res.data[0].titulo)
-      setDescricao(res.data[0].descricao)
+    documento_id = localStorage.getItem('documento_id')
+    
+    api.get(`/documentos?id=${documento_id}`).then(res => { //Tenho q descobrir como passar por aqui. Provavelmente pelo localStorage
+      setIdentificador(res.data[0].docPadrao.identificador) //Só vem um doc em array, por isso colocar [0]
+      setTitulo(res.data[0].docPadrao.titulo)
+      setDescricao(res.data[0].docPadrao.descricao)
       setListaLabels(Object.keys(res.data[0].camposObj)) //transforma o obj em array (os labels no caso)
       setListaInputs(Object.values(res.data[0].camposObj)) //transforma o obj em array (os labels no caso)
-      console.log(res.data[0])
+      //console.log(res.data[0].docPadrao)
     }).catch(e => {
       console.log('error: ', e)
       alert('Ocorreu algum erro ao abrir o documento!')
       history.push('/documentos')
     })
-    console.log(listaLabels)
+    console.log('Doc_id: ',documento_id)
+    console.log('titulo: ',titulo)
 
   }, [])
 
   function handleSubmit() {
+    console.log('oi',documento_id)
+    const idDocumento = localStorage.getItem('documento_id')
 
     let arrayLabelsInputs = []
     listaLabels.map((label, i) => {
@@ -53,15 +57,14 @@ function AddDocumento() {
     // gerando nssa estrutura [[A,a],[B,b],[C,c]] para transformar em obj pra mandar pro mongo
     const camposPreenchidosObj = Object.fromEntries(arrayLabelsInputs)
 
-    const idDocPadrao = localStorage.getItem('docPadrao_id') //Sabe DEUS pq, aqui ñ enxerga o docPadrao_id
-
     console.log(camposPreenchidosObj)
-    console.log('docPadrao: ', idDocPadrao)
+    
 
-    api.post(`/documentos/${idDocPadrao}`, { camposObj: camposPreenchidosObj },
+
+    api.put(`/documentos/${idDocumento}`, { camposObj: camposPreenchidosObj },
       { headers: { adm_id: '5fbc0782f91fe0302027f8c7', funcionario_id: '5fbc0d558ceaae267821b738' } }
     ).then(() => {
-      alert('Documento enviado com sucesso!')
+      alert('Documento ATUALIZADO com sucesso!')
       localStorage.removeItem('documento_id')
       localStorage.removeItem('docPadrao_id')
       history.push('/documentos')
@@ -74,8 +77,9 @@ function AddDocumento() {
   return (
 
     <div id='page-addDocumento'>
-      <Header3DBack title='Add Documento' search={false} backTo='/documentos'
+      <Header3DBack title='Editar Documento' search={false} backTo='/documentos'
         backFunc={() => { //Ao clicar em voltar tem q limpar
+          localStorage.removeItem('documento_id')
           localStorage.removeItem('docPadrao_id')
         }} />  {/* adm é pra definir se o back vai pro menu */}
       <main>
@@ -149,6 +153,6 @@ function AddDocumento() {
   );
 }
 
-export default AddDocumento;
+export default VEDocumento;
 
 

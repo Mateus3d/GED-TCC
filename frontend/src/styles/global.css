@@ -64,3 +64,8 @@ a:hover, button:hover {
 .icon{
     color: var(--azulOutline);
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}

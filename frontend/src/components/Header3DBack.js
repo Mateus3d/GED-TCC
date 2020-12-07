@@ -34,7 +34,7 @@ function Header3DBack(props) {
     <>
       <ModalSearch show={showModal} handleClose={handleHideModal} />
       <div id="header">
-        <Link className='back' to={backTo}>
+        <Link className='back' to={backTo} onClick={props.backFunc}>
           <ArrowLeftCircle size={80} strokeWidth={0.5} className='icon' />
         </Link>
         <h1>{props.title}</h1>

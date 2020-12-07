@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PlusCircle, CheckCircle } from 'react-feather'
 import { Link, useHistory } from 'react-router-dom'
 import api from '../services/api'
@@ -10,6 +10,10 @@ function Login() {
   const [senha, setSenha] = useState('')
 
   const history = useHistory()
+
+  useEffect(()=>{
+    localStorage.clear()
+  })
 
   function handleSubmit(e) {
     e.preventDefault()
