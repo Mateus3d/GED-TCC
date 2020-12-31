@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const AdmSchema = new mongoose.Schema({
-    cnpj: Number,
+    cnpj: String, 
     username: String,
     senha: String
 })

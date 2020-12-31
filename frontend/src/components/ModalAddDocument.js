@@ -9,7 +9,6 @@ function ModalAddDocument(props) {
    function handleClickDoc(e) {
     localStorage.setItem('docPadrao_id', e.target.id)
     history.push('/adicionardocumento')
-
    }
 
   return (
@@ -30,8 +29,6 @@ function ModalAddDocument(props) {
               return (<button key={item._id} id={item._id} 
                 onClick={handleClickDoc}>{item.identificador} {item.titulo}</button>)
             })}
-            <button>FR02 Limpeza da Cuba de Cana</button>
-            {/* <button>{props.identificador} {props.titulo}</button> */}
 
           </div>
         </div>

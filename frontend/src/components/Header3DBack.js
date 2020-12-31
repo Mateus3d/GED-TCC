@@ -11,8 +11,10 @@ function Header3DBack(props) {
 
   useEffect(()=>{
     if (props.adm) {
+      console.log('é adm')
       setBackTo('/menu')
     } else if (props.backTo) {
+        console.log('é func')
         setBackTo(props.backTo)
     } else {
       setBackTo('/')
@@ -32,7 +34,8 @@ function Header3DBack(props) {
 
   return (
     <>
-      <ModalSearch show={showModal} handleClose={handleHideModal} />
+      <ModalSearch show={showModal} handleClose={handleHideModal} campos={props.campos} 
+      handleSearch={props.handleSearch} camposUTF={props.camposUTF} />
       <div id="header">
         <Link className='back' to={backTo} onClick={props.backFunc}>
           <ArrowLeftCircle size={80} strokeWidth={0.5} className='icon' />

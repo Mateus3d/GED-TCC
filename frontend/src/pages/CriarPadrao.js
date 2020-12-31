@@ -12,20 +12,27 @@ function CriarPadrao() {
   const [identificador, setIdentificador] = useState('')
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
+  const [area, setArea] = useState('')
 
   const [listaLabelsPreenchidos, setListaLabelsPreenchidos] = useState([])
-  const [formularios,setFormularios] = useState([])
+  const [formularios, setFormularios] = useState([])
+  let adm_id
 
-  
-  useEffect(()=> {
-    //Tem q carregar no lado os formulários já criados! (Dps tem q restringir por ADM!!!! )
-    api.get('/docPadrao')
+
+  useEffect(() => {
+    updatePage()
+
+  }, [formularios.length])
+
+  function updatePage() {
+    adm_id = localStorage.getItem('user')
+    api.get('/docPadrao', { headers: { adm_id } })
       .then(res => {
         //console.log(res.data)
         setFormularios(res.data)
       })
       .catch(e => alert('Algo deu errado ao carregar os formulários'))
-  },[formularios])
+  }
 
   function handleOnChange(e) {
     listaLabelsPreenchidos[qntLabels] = e.target.value
@@ -33,9 +40,10 @@ function CriarPadrao() {
     //console.log(listaLabelsPreenchidos)
   }
 
-  function handleSubmit() {
-    
-    if (listaLabelsPreenchidos.length > 0 && identificador !== '' && titulo !== '' && descricao !== '') {
+  async function handleSubmit() {
+
+    if (listaLabelsPreenchidos.length > 0 && identificador !== '' && titulo !== '' &&
+      descricao !== '' && area !== '') {
       let arrayLabelsInputs = []
       listaLabelsPreenchidos.map((label) => {
         arrayLabelsInputs.push([label, ""])
@@ -44,25 +52,40 @@ function CriarPadrao() {
       const camposPreenchidosObj = Object.fromEntries(arrayLabelsInputs)
       console.log(camposPreenchidosObj)
 
-      api.post('/docPadrao', { identificador, titulo, descricao, camposObj: camposPreenchidosObj },
-      { headers: { adm_id: '5fbc0782f91fe0302027f8c7' } }) //Tem q mudar pra dinamico!!!!!!!!
-      .then(() => { 
-        alert('Deu certo!') 
-        setListaLabels([])
-        setListaLabelsPreenchidos([])
-        setQntLabels(0)
-        setIdentificador('')
-        setTitulo('')
-        setDescricao('')
-        
-      })
-      .catch(e => { alert(`Erro ao criar formulário!\n${e.response.data.error}`) })
+      await api.post('/docPadrao', { identificador, titulo, area, descricao, camposObj: camposPreenchidosObj },
+        { headers: { adm_id: localStorage.getItem('user') } }) //Tem q mudar pra dinamico!!!!!!!!
+        .then(() => {
+          alert('Deu certo!')
+        })
+        .catch(e => { alert(`Erro ao criar formulário!\n${e.response.data.error}`) })
+
+      let msg_auditoria = `Administrador Adicionou Formulário Padrão - ${identificador} ${titulo} - em ${area}`
+      const adm_id = localStorage.getItem('user')
+
+      await api.post('/auditoria', { descricao: msg_auditoria }, { headers: { adm_id } })
+        .then(() => {
+          alert('Auditado!')       //To fznd aqui pra evitar de receber os param. como ''     
+          setListaLabels([])
+          setListaLabelsPreenchidos([])
+          setQntLabels(0)
+          setIdentificador('')
+          setTitulo('')
+          setDescricao('')
+          setArea('')
+          updatePage() // Gambiarra das braba, sabe Deus pq mas se colocar + da pau kkk
+          //alert(formularios.length)
+          setFormularios([...formularios]) //o react é burrinho e tenho q avisar ele
+        })
+        .catch(e => {
+          alert('Deu ruim na auditoria')
+          console.error(e)
+        })
     }
-    else if (listaLabelsPreenchidos.length === 0){
+    else if (listaLabelsPreenchidos.length === 0) {
       alert('Aperte o botão de + para adicionar campos ao formulário!')
     } else (alert('Preencha os campos obrigatórios!'))
 
-    
+
   }
 
   function addCampoHandler() {
@@ -89,8 +112,8 @@ function CriarPadrao() {
     <div id="page-criarPadrao">
       <aside className='secao-lateral'>
         <h2>Formulários</h2>
-        {formularios.map((form,i) => {
-          return (  <h4 key={i}>{i + 1}) {form.identificador} {form.titulo}</h4>  )
+        {formularios.map((form, i) => {
+          return (<h4 key={i}>{i + 1}) {form.identificador} {form.titulo}</h4>)
         })}
 
       </aside>
@@ -110,9 +133,9 @@ function CriarPadrao() {
             value={titulo}
             onChange={e => setTitulo(e.target.value)}
           />
-          <input placeholder='Descrição' required
-            value={descricao}
-            onChange={e => setDescricao(e.target.value)}
+          <input placeholder='Área' required
+            value={area}
+            onChange={e => setArea(e.target.value)}
           />
           <div className='buttons'>
             <button onClick={addCampoHandler}>
@@ -122,6 +145,12 @@ function CriarPadrao() {
               <MinusCircle size={42} color={'white'} />
             </button>
           </div>
+
+
+          <input placeholder='Descrição' required className='descricao'
+            value={descricao}
+            onChange={e => setDescricao(e.target.value)}
+          />
         </section>
 
         <article>

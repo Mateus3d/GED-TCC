@@ -1,57 +1,152 @@
 import React, { useState } from 'react'
 import { Check, Edit3, Eye, PlusCircle, Share2, XCircle } from 'react-feather';
+import api from '../services/api';
 import './linhaFuncionario.css'
 
 //props.title, props.search,props.adm: boolean,
 function LinhaFuncionario(props) {
   const [edita, setEdita] = useState(false)
+  const [identificador, setIdentificador] = useState(props.ident)
+  const [nome, setNome] = useState(props.nome)
+  const [area, setArea] = useState(props.area)
+  const [login, setLogin] = useState(props.login)
+  const [senha, setSenha] = useState(props.senha)
 
   function toggleEnableEdit() {
+    const adm_id = localStorage.getItem('user')
     setEdita(!edita)
+    if (edita) {
+      if (!props.id) { //entende-se q não foi criado ainda
+        console.log('bora criar')
+        async function newFuncionario() {
+          await api.post('/funcionarios', { identificador, nome, area, username: login, senha },
+            { headers: { adm_id } })
+            .then(() => {
+              alert('Funcionario acrescentado!')
+              props.removeNovoFunc()
+            })
+            .catch(e => {
+              alert('Erro ao Criar!')
+              console.error(e)
+            })
+          props.handleUpdateListaFunc()
+        }
+        newFuncionario()
+
+        let descricao = `Administrador Adicionou Funcionário - ${identificador} ${nome} - em ${area}`
+
+        api.post('/auditoria', { descricao }, { headers: { adm_id } })
+          .then(() => {
+            alert('Auditado!')
+          })
+          .catch(e => {
+            alert('Deu ruim na auditoria')
+            console.error(e)
+          })
+
+      } else {
+        const adm_id = localStorage.getItem('user') 
+        console.log('update nele')
+        console.log('id: ', props.id)
+        api.put(`/funcionarios/${props.id}`, { identificador, nome, area, username: login, senha },
+          { headers: { adm_id } })
+          .then(() => { alert('Funcionário Atualizado!') })
+          .catch(e => {
+            alert('Erro ao Atualizar!')
+            console.error(e)
+          })
+
+        let descricao = `Administrador Atualizou Funcionário - ${identificador} ${nome} - em ${area}`
+
+        api.post('/auditoria', { descricao }, { headers: { adm_id } })
+          .then(() => {
+            alert('Auditado!')
+          })
+          .catch(e => {
+            alert('Deu ruim na auditoria')
+            console.error(e)
+          })
+      }
+    }
   }
 
-  return (
+  function handleRemove() {
+    const adm_id = localStorage.getItem('user')
+    if (props.id) { //DPS TEM Q SIMPLESMENTE COLOCAR ATIVO=0 AO INVÉS DE DELETAR
+      console.log('bora deletar')
+      async function funcionarios() {        
+        await api.delete(`/funcionarios/${props.id}`, { headers: { adm_id } })
+          .then(() => {
+            alert('Funcionario Removido!')
+            props.handleUpdateListaFunc()
+          })
+          .catch(e => {
+            alert('Algo deu errado!')
+            console.error(e)
+          })
+      }
+      funcionarios()
 
-    <div className="row-funcionario">
-      <input disabled={!edita}
-        style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        id={props.i}
-        value={props.ident}
-        onChange={props.funcOnChange}
-      />
-      <input disabled={!edita}
-        style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={props.nome} 
-        onChange={props.funcInput}
-      />
-      <input disabled={!edita}
-        style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={props.area} 
-        onChange={props.funcInput}
-      />
-      <input disabled={!edita}
-        style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={props.login} 
-        onChange={props.handleLogin}
-      />
-      <input disabled={!edita} type={!edita ? 'password' : 'text'}
-        style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={props.senha} 
-        onChange={props.handleSenha}
-      />
+      let descricao = `Administrador Removeu Funcionário - ${identificador} ${nome} - de ${area}`
 
-      <div className="edit-remove-button">
-        <button className='edit-button' onClick={toggleEnableEdit}
-          style={edita ? { backgroundColor: 'lightGreen' } : { backgroundColor: 'var(--azul2)' }}
-        >
-          {edita ? (<Check />) : <Edit3 />}
-        </button>
-        <button className='remove-button'>
-          <XCircle />
-        </button>
-      </div>
+      api.post('/auditoria', { descricao }, { headers: { adm_id } })
+        .then(() => {
+          alert('Auditado!')
+        })
+        .catch(e => {
+          alert('Deu ruim na auditoria')
+          console.error(e)
+        })
+
+  } else {
+    props.removeNovoFunc()
+  }
+
+}
+
+return (
+
+  <div className="row-funcionario">
+    <input disabled={!edita}
+      style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
+      value={identificador}
+      onChange={e => {
+        setIdentificador(e.target.value)
+      }}
+    />
+    <input disabled={!edita}
+      style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
+      value={nome}
+      onChange={e => { setNome(e.target.value) }}
+    />
+    <input disabled={!edita}
+      style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
+      value={area}
+      onChange={e => { setArea(e.target.value) }}
+    />
+    <input disabled={!edita}
+      style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
+      value={login}
+      onChange={e => { setLogin(e.target.value) }}
+    />
+    <input disabled={!edita} type={!edita ? 'password' : 'text'}
+      style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
+      value={senha}
+      onChange={e => { setSenha(e.target.value) }}
+    />
+
+    <div className="edit-remove-button">
+      <button className='edit-button' onClick={toggleEnableEdit}
+        style={edita ? { backgroundColor: 'lightGreen' } : { backgroundColor: 'var(--azul2)' }}
+      >
+        {edita ? (<Check />) : <Edit3 />}
+      </button>
+      <button className='remove-button' onClick={handleRemove}>
+        <XCircle />
+      </button>
     </div>
-  )
+  </div>
+)
 }
 
 export default LinhaFuncionario;

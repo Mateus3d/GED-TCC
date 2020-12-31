@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const FuncionarioSchema = new mongoose.Schema({
-    identificador: Number,
+    identificador: String,
     nome: String,
     area: String,
     username: String,

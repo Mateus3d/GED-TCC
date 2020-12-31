@@ -9,8 +9,13 @@ function LinhaDocumento(props) {
 
   function handleEdit(e) {
     localStorage.setItem('documento_id', props.id)
-    history.push('/documento') //Aqui é para editar ou visualizar
-    //console.log(props.id)
+    history.push('/documento') //Aqui é para editar ou visualizar ////////////////////////////PAU
+    console.log(props.id)
+    console.log(props.titulo)
+  }
+
+  function handleVisualizar(e) {
+    
   }
 
   return (
@@ -32,7 +37,7 @@ function LinhaDocumento(props) {
             <Share2 />
           </button>
         </div>) : (
-          <button className='visualizar-button' onClick={e => { console.log('clicaram em mim') }}>
+          <button className='visualizar-button' onClick={handleEdit}>
             <Eye />
           </button>
         )}

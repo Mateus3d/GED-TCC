@@ -62,9 +62,11 @@
     color: white;
     margin-right: 6px;
     text-align: justify;
+    font-weight: bold;
 }
 
-#page-addDocumento main article aside div textarea{
+#page-addDocumento main article aside div textarea,
+#page-addDocumento main article aside div p{
     max-width: 400px;
     max-height: 180px;
     flex: 1;
@@ -74,7 +76,9 @@
     padding: 12px;
     margin-bottom: 18px;
 }
-
+#page-addDocumento main article aside div p {
+  background-color: white;
+}
 #page-addDocumento main section {
     display: flex;
     flex-direction: column;
