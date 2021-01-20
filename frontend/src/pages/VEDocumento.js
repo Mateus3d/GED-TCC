@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ClipBtn from '../images/Clip_Button.svg'
 import EnviarBtn from '../images/Enviar_Button.svg'
 import Header3DBack from '../components/Header3DBack';
 import '../styles/addDocumento.css'
 import api from '../services/api';
 import { useHistory } from 'react-router-dom';
+import arquivo_icon from '../images/archive_icon.png'
 
 //A confirmação ou negação serão feitos nessa tela mesma posteriormente
 //Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
@@ -18,28 +19,27 @@ function VEDocumento() {
   const [listaLabels, setListaLabels] = useState([])
   const [listaInputs, setListaInputs] = useState([])
 
-  //const [documento_id, setDocumento_id] = useState('')
+  const [arquivosURLs, setArquivosURLs] = useState([])
+  const [arquivosNomes, setArquivosNomes] = useState([])
+  const [arquivos, setArquivos] = useState([]) //Esse aqui é dos arquivos que são acrescentados 
   let documento_id = ''
-  //const documento_id
 
   const history = useHistory()
 
-  //const docPadrao_id = '5fc96df642968027b0661b40' //Depois tornar dinamico!!!!!!!!!!!!
+  const preview = useMemo(() => {
+    let res
+    console.log(arquivos)
+    if (arquivos) {
+      res = arquivos.map(arq => {
+        return URL.createObjectURL(arq)
+      })
+      return res
+    } else { return null }
+  }, [arquivos])
 
   useEffect(() => {
     //setDocumento_id(localStorage.getItem('documento_id'))
     documento_id = localStorage.getItem('documento_id')
-
-    /* api.get(`/documentos/${documento_id}`).then(res => { //Tenho q descobrir como passar por aqui. Provavelmente pelo localStorage
-      console.log(documento_id)
-      console.log(res.data)
-    }).catch(e => {
-      console.log('error: ', e)
-      alert('Ocorreu algum erro ao abrir o documento!')
-      history.push('/documentos')
-    }) */
-
-    //const func_id = localStorage.getItem('user')
 
     api.get(`/documentos/${documento_id}`)
       .then(res => { //Tenho q descobrir como passar por aqui. Provavelmente pelo localStorage
@@ -48,6 +48,8 @@ function VEDocumento() {
         setDescricao(res.data.docPadrao.descricao)
         setListaLabels(Object.keys(res.data.camposObj)) //transforma o obj em array (os labels no caso)
         setListaInputs(Object.values(res.data.camposObj)) //transforma o obj em array (os labels no caso)
+        setArquivosURLs(res.data.arquivos_url)
+        setArquivosNomes(res.data.arquivos)
         console.log(res.data)
         //console.log(documento_id)
       }).catch(e => {
@@ -74,7 +76,18 @@ function VEDocumento() {
 
     //console.log(camposPreenchidosObj)
     let identificador_doc = '', titulo_doc = '', area_doc = ''
-    await api.put(`/documentos/${idDocumento}`, { camposObj: camposPreenchidosObj },
+    //Isso é para mandar como multipartform
+    const data = new FormData()
+    listaLabels.map((label, i) => {
+      return data.append(`${label}`, listaInputs[i])
+    })
+    //manda os arquivos
+    arquivos.map(arq => {
+      if (arq) //Pra prevenir de qnd ele é null e dar pau
+        return data.append('arquivos', arq)
+    })
+
+    await api.put(`/documentos/${idDocumento}`, data,
       { headers: { adm_id } }
     ).then(res => {
       alert('Documento ATUALIZADO com sucesso!')
@@ -103,15 +116,14 @@ function VEDocumento() {
         alert('Deu ruim na auditoria')
         console.error(e)
       })
-
-
-
   }
 
   return (
 
     <div id='page-addDocumento'>
-      <Header3DBack title='Editar Documento' search={false} backTo='/documentos'
+
+      <Header3DBack title={localStorage.getItem('adm') === 'true' ? 'Editar Documento' : 'Documento'}
+        search={false} backTo='/documentos'
         backFunc={() => { //Ao clicar em voltar tem q limpar
           localStorage.removeItem('documento_id')
           localStorage.removeItem('docPadrao_id')
@@ -135,9 +147,10 @@ function VEDocumento() {
                         value={listaInputs[i]}
                         onChange={e => {
                           listaInputs[i] = e.target.value
-                          setListaInputs([...listaInputs]) }}                        
+                          setListaInputs([...listaInputs])
+                        }}
                       />
-                      )
+                    )
                       : (<p>{listaInputs[i]}</p>)
                     }
 
@@ -159,12 +172,13 @@ function VEDocumento() {
                         value={listaInputs[i]}
                         onChange={e => {
                           listaInputs[i] = e.target.value
-                          setListaInputs([...listaInputs]) }}                        
+                          setListaInputs([...listaInputs])
+                        }}
                       />
-                      )
+                    )
                       : (<p>{listaInputs[i]}</p>)
                     }
-                    
+
                   </div>)
               }
             })}
@@ -176,9 +190,14 @@ function VEDocumento() {
           <section className='buttons'>
             <div>
               <h3>Anexar<br></br> Arquivo</h3>
-              <button className='anexarBtn' onClick={() => { console.log(documento_id) }}>
+              <label className='anexarBtn'>
+                <input multiple style={{ display: 'none' }} type="file" onChange={e => {
+                  const arqAux = Array.from(e.target.files)
+                  setArquivos(arqAux.concat(arquivos))
+                  console.log(arquivos)
+                }} />
                 <img src={ClipBtn} alt="Enviar" />
-              </button>
+              </label>
             </div>
 
             <div>
@@ -190,6 +209,42 @@ function VEDocumento() {
           </section>
         ) : null}
 
+        {arquivos ? ( //Isso é oq é acrescentado!!!!
+          arquivos.map((arq, i) => {
+            return (
+              <section key={i} className="preview-section">
+                {arq.type.includes('image') ? (   //se for imagem gera o preview
+                  <label style={{ backgroundImage: `url(${preview[i]})` }}
+                    className={arq ? 'preview-visible' : 'preview-invisible'} />
+                ) : ( //se não coloca o ícone
+                    <label id='preview-icon' style={{ backgroundImage: `url(${arquivo_icon})` }}
+                      className={arq ? 'preview-visible' : 'preview-invisible'} />
+                  )}
+                <strong style={{ color: 'white', fontSize: 28 }}>{arq.name}</strong>
+              </section>
+            )
+          })
+        ) : null}
+
+        {arquivosURLs ? ( //Isso é oq é carregado!!!
+          arquivosURLs.map((arqURL, i) => {
+            return (
+              <section key={i} className="preview-section">
+                {arqURL.includes('.jpg') || arqURL.includes('.png') ? (   //se for imagem gera o preview
+                  <a style={{ backgroundImage: `url(${arqURL})` }} target='_blank' href={arqURL}
+                    className='preview-visible' />
+                ) : ( //se não coloca o ícone
+                    <a id='preview-icon' style={{ backgroundImage: `url(${arquivo_icon})` }}
+                      target='_blank' href={arqURL}
+                      className='preview-visible' />
+                  )}
+                <a style={{ color: 'white', fontSize: 28, overflow:'hidden' }} target='_blank' href={arqURL}>
+                  {arquivosNomes[i]}
+                </a>
+              </section>
+            )
+          })
+        ) : null}
 
       </main>
     </div>

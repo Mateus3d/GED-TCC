@@ -25,7 +25,6 @@ function Routes() {
         <Route path='/auditoria' exact component={Auditoria} />
         <Route path='/verificacao' exact component={Verificacao} />
         <Route path='/documento' exact component={VEDocumento} /> {/* Gambiarra pura, mas fzr oq */}
-
       </Switch>
     </BrowserRouter>
 

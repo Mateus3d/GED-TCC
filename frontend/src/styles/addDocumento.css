@@ -84,9 +84,11 @@
     flex-direction: column;
 }
 
-#page-addDocumento main section button{
+#page-addDocumento main section button,
+#page-addDocumento main section label.anexarBtn{
     background: none;
     border: none;
+    border-radius: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -113,6 +115,31 @@
 #page-addDocumento main section.buttons div button.enviarBtn:hover{
     box-shadow: 0 0 4px 4px green;
 }
-#page-addDocumento main section.buttons div button.anexarBtn:hover{
+#page-addDocumento main section.buttons div label.anexarBtn:hover{
     box-shadow: 0 0 4px 4px var(--vermelho);
+}
+
+#page-addDocumento main section.preview-section {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-top: 32px;
+}
+
+.preview-visible {
+  border-radius: 12px;
+  border: 2px solid lightblue;
+  height: 150px;
+  min-width: 240px;
+  background-size: cover;
+  margin-right: 24px;
+}
+
+#preview-icon {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, 0.25);
 }

@@ -70,7 +70,7 @@ function Documentos() {
     const adm_id = localStorage.getItem('user')
     if (admBool) {
       await api.delete(`/documentos/${documento_id}`)
-        .then(res => {
+        .then(async res => {
           alert('Documento Apagado!')
           documentos.length = documentos.length - 1 //Como o react é bem burrinho ele não analisa isso
           console.log(res.data)
@@ -79,6 +79,7 @@ function Documentos() {
           area_doc = res.data.docPadrao.area
           //alert(`documentos.length: ${documentos.length}`)
           setDocumentos([...documentos]) //E não atualiza se não deixar explicito chamando a func set...
+          await deletaHashs(documento_id)
           console.log('Deu Certo')
         }).catch(e => {
           console.log('Deu ruim')
@@ -95,7 +96,22 @@ function Documentos() {
           alert('Deu ruim na auditoria')
           console.error(e)
         })
+
+      //Colocar pra deletar o hash caso haja algum documento!!!!!!!!!!!!!!!!!!
     }
+  }
+
+  async function deletaHashs(documento_id) {
+    //console.log('documenot id:::::',documento_id)
+    api.delete(`/hash/${documento_id}`)
+      .then(() => {
+        alert('Hashs deletados com sucesso!')
+        //console.log(res)
+      })
+      .catch(e => {
+        console.error(e)
+        alert('Erro ao deletar Hashs')
+      })
   }
 
   function handleShowModal() {

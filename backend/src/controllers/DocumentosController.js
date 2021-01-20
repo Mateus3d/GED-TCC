@@ -44,7 +44,7 @@ module.exports = {
     if (identificador || titulo || descricao || data) { //para pesquisa
       documentos = documentos.filter(doc => {
         if (doc.docPadrao.titulo.toLowerCase().includes(titulo.toLowerCase()) &&
-          doc.docPadrao.identificador.includes(identificador) &&
+          doc.docPadrao.identificador.toLowerCase().includes(identificador) &&
           doc.docPadrao.descricao.toLowerCase().includes(descricao.toLowerCase()) &&
           String(dateFormat(doc.data, 'dd/mm/yyyy')).includes(data)) {
           return doc
@@ -74,8 +74,13 @@ module.exports = {
     //const { func_id } = req.headers
     let { adm_id, func_id } = req.headers
     const { documento_id } = req.params
-    const { camposObj } = req.body
+    const  camposObj  = req.body //Agr estou transformando oq vem como multipart no camposObj
+    var filenames = req.files.map(file => {
+      return file.filename;
+    })
     let documentoNovo
+    console.log(req.body)
+    console.log(req.files)
 
     if (documento_id) {
       let docPadrao = await DocPadrao.findById(documento_id)
@@ -89,7 +94,8 @@ module.exports = {
     }
 
     if (adm_id) { //Se vier pelo header, então QUEM ESTÁ CRIANDO é um ADM
-      documentoNovo = await Documento.create({ camposObj, adm: adm_id, funcionario: adm_id, docPadrao: documento_id })
+      documentoNovo = await Documento
+        .create({ camposObj, adm: adm_id, funcionario: adm_id, docPadrao: documento_id, arquivos: filenames  })
         .catch(e => {
           console.log(e)
           return res.status(400).json({ error: 'Erro ao criar documento' })
@@ -111,7 +117,8 @@ module.exports = {
       }
 
       // PROBLEMA!! O ADM_ID É MEIO FODA DE FICAR MANDANDO TODA VEZ. TEM Q VER SE DEIXA OU TIRA..
-      documentoNovo = await Documento.create({ camposObj, adm: adm_id, funcionario: func_id, docPadrao: documento_id })
+      documentoNovo = await Documento
+      .create({ camposObj, adm: adm_id, funcionario: func_id, docPadrao: documento_id, arquivos: filenames })
         .catch(e => {
           console.log(e)
           return res.status(400).json({ error: 'Erro ao criar documento' })
@@ -142,15 +149,25 @@ module.exports = {
 
   },
   async update(req, res) {
-    const { adm_id } = req.headers/* 
-		const adm = await Funcionario.findOne({adm: adm_id})
+    const { adm_id } = req.headers
+    const adm = await Adm.findById(adm_id)
+      .catch(e => {
+        console.error(e)
+        return res.status(400).json({error: 'Houve algum erro com o adm'})
+      })
 		if (!adm) {
 			return res.status(400).json({error: 'Erro de autenticacao'})
-		} */
+		}
 
     const { documento_id } = req.params
-    const { camposObj } = req.body
-    console.log(documento_id)
+    const  camposObj = req.body
+    if (req.files){
+      var filenames = req.files.map(file => {
+        return file.filename;
+      })
+    }  
+   //console.log(camposObj) 
+   //console.log(req.files)
 
     let documentos = await Documento.findById(documento_id)
       .catch(e => {
@@ -162,7 +179,8 @@ module.exports = {
     if (!documentos) {
       return res.status(400).json({ error: 'Documento não encontrado para atualização' })
     }
-    documentos = await Documento.findByIdAndUpdate({ _id: documento_id }, { camposObj }, { new: true })
+    documentos = await Documento
+      .findByIdAndUpdate({ _id: documento_id }, { camposObj, arquivos: filenames }, { new: true })
       .populate('docPadrao')
       .catch(err => {
         if (err) {
@@ -172,7 +190,7 @@ module.exports = {
       })
 
     return res.json(documentos)
-
+    //return res.json({msg: 'oi'})
   }
 
 }

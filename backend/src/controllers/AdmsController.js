@@ -1,6 +1,5 @@
 //index, show, store, update, destroy
 const Adm = require('../models/Adm') //O model (tabela do BD)
-const { destroy } = require('./FuncionariosController')
 
 module.exports = {
   async index(req, res) {

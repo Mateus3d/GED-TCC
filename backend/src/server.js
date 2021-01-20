@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const routes = require('./routes')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
 
@@ -11,6 +12,7 @@ mongoose.connect('mongodb+srv://oministack:oministack@oministack09.ed6ms.mongodb
 
 app.use(cors())
 app.use(express.json())
+app.use('/files',express.static(path.resolve(__dirname,'..','uploads'))) //Isso permite q nessa rota rode os arquivos upados
 app.use(routes)
 
 

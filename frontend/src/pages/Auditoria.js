@@ -11,12 +11,7 @@ function Auditoria() {
   const [campos, setCampos] = useState(['identificador', 'descricao', 'data'])
   const [camposUTF, setCamposUTF] = useState(['ID', 'Descrição', 'Data'])
 
-  const [listaAudit, setListaAudit] = useState([])/* 
-  const [identificador, setIdentificador] = useState('')
-  const [descricao, setDescricao] = useState('')
-  const [data, setData] = useState('') */
-
-  //const [adm_id, setAdm_id] = useState('')
+  const [listaAudit, setListaAudit] = useState([])
   const [searchParams, setSearchParams] = useState('')
 
   function handleSearch(params) {
@@ -24,9 +19,7 @@ function Auditoria() {
   }
 
   useEffect(() => {
-    //setAdm_id(localStorage.getItem('adm_id'))
     const adm_id = localStorage.getItem('user')
-    //api.get('/auditoria',{headers: adm_id})
     api.get('/auditoria', { headers: { adm_id }, params: searchParams })
       .then(res => {
         setListaAudit(res.data.reverse())

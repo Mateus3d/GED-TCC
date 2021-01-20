@@ -6,18 +6,23 @@ div.div-campo {
     height: 110px;  
 }
 
-div.div-campo input {
+div.div-campo .input-disabled {
+    border-radius: 16px;
+    background-color: none;
+    border: 2px solid rgba(119, 119, 119, 0.25);
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.25));
+    font-size: 18px;
+    padding: 6px 20px;
     width: 100%;
     height: 80%;
     cursor: default;
 }
 
-
 div.div-campo label textarea {
     padding: 10px;
+    border: 2px solid var(--azulOutline);
     color: var(--cinzaLabel);    
-    background: none;
-    border: none;
+    background: white;
     min-height: 40px;
     filter: none;    
     width: 80%;
