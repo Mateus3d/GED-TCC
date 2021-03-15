@@ -1,9 +1,7 @@
 const mongoose = require('mongoose')
 //Esse é o doc preenchido
 const DocumentoSchema = new mongoose.Schema({
-   /*  identificador: String,
-    titulo: String,
-    descricao: String,*/
+    identificador_doc: String,
     camposObj: {},
     arquivos: [],
 		data: {

@@ -17,7 +17,6 @@ function ModalSearch(props) {
 
   }, [])
 
-
   function boraPesquisar() {
     if (props.campos) {
       let arrayLabelsCampos = []

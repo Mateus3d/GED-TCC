@@ -8,6 +8,7 @@ const FuncionariosController = require('./controllers/FuncionariosController')
 const SessionsController = require('./controllers/SessionsController')
 const AuditoriaController = require('./controllers/AuditoriaController')
 const HashsController = require('./controllers/HashsController')
+const PDFController = require('./controllers/PDFController')
 
 const routes = express.Router()
 const upload = multer(uploadConfig)
@@ -44,12 +45,14 @@ routes.get('/auditoria', AuditoriaController.index)
 routes.delete('/auditoria', AuditoriaController.destroy)
 
 routes.post('/hash', upload.array('arquivos'), HashsController.store)
+routes.post('/hash/:h', HashsController.storeRaw) //guarda o hash já processado
 routes.get('/hash/tudo', HashsController.index) //-D
 //routes.delete('/hash/tudo', HashsController.destroy) //-D Deleta tudo
 routes.delete('/hash/:documento_id', HashsController.destroy) //-D
+
 routes.post('/verifica', upload.single('arquivo'), HashsController.show) //Verificação!!
 
-
+routes.post('/gerarpdf', PDFController.store)
 /*
 routes.get('/funcionarios', usersController.index)
 routes.post('/funcionarios', usersController.store)

@@ -13,26 +13,21 @@ function Cadastro() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    const data = {cnpj, username, senha}
-    if (senha === confirmSenha) {
-      //console.log({cnpj, username, senha})
-      api.post('/adms',data).then(()=>{
+    const data = {cnpj, username, senha} //dados digitados reunidos em uma variável
+    if (cnpj === '' || username==='' || senha==='')//Verifica se preencheu os campos
+      return alert('Todos os campos são obrigatórios!')
+    if (senha !== confirmSenha)
+      return alert('A senha deve ser a mesma em confirmar senha!')   
+      api.post('/adms',data).then(()=>{ //Envio da requisição
         alert('Cadastrado com sucesso!')
-        history.push('/') //poderia colocar um modal de sucesso ou não dps, mas ñ é necessário
+        history.push('/') //Redireciona o usuário para tela de login
       }).catch(e => {
         alert(`Erro ao cadastrar!\n${e.response.data.error}`)
-        //console.log(e.response.data.error)
       })
-      
-    }
-    else alert('A senha deve ser a mesma em confirmar senha!')
-   
   }
-
-  return (
-
+  return ( //Daqui em diante é estrutura HTML
     <div id='page-cadastro'>
-      <Header3DBack title='3D GED' />
+      <Header3DBack title='3D GED' /> {/* Componente definido para estrutura do topo */}
       <div className='container'>
         <div className='side-content'>
           <strong>Essa conta é administradora e tem acesso total ao GED da empresa</strong>
@@ -40,7 +35,7 @@ function Cadastro() {
         <main className='main-content'>
           <form onSubmit={handleSubmit}>
             <h2>Cadastro</h2>
-            <input placeholder="CNPJ" type='number' 
+            <input placeholder="CNPJ" type='number' /* Evita colocar e,-,+,. */
               value={cnpj} 
               onChange={e =>{setcnpj(e.target.value)}}              
             />

@@ -17,7 +17,7 @@ function Documentos() {
   const [searchParams, setSearchParams] = useState('')
 
   const [camposUTF, setCamposUTF] = useState(['ID', 'Título', 'Descrição', 'Data'])
-  const [campos, setCampos] = useState(['identificador', 'titulo', 'descricao', 'data'])
+  const [campos, setCampos] = useState(['identificador_doc', 'titulo', 'descricao', 'data'])
   let adm_id
 
   useEffect(() => {
@@ -74,7 +74,7 @@ function Documentos() {
           alert('Documento Apagado!')
           documentos.length = documentos.length - 1 //Como o react é bem burrinho ele não analisa isso
           console.log(res.data)
-          identificador_doc = res.data.docPadrao.identificador
+          identificador_doc = res.data.identificador_doc
           titulo_doc = res.data.docPadrao.titulo
           area_doc = res.data.docPadrao.area
           //alert(`documentos.length: ${documentos.length}`)
@@ -86,7 +86,7 @@ function Documentos() {
         })
 
       let descricao = `Administrador Removeu - ${identificador_doc} ${titulo_doc} - de ${area_doc}`
-      let data = { descricao } //O idetificador vai padrao pro Adm
+      let data = { descricao } //O identificador vai padrao pro Adm
 
       api.post('/auditoria', data, { headers: { adm_id } })
         .then(() => {
@@ -102,7 +102,6 @@ function Documentos() {
   }
 
   async function deletaHashs(documento_id) {
-    //console.log('documenot id:::::',documento_id)
     api.delete(`/hash/${documento_id}`)
       .then(() => {
         alert('Hashs deletados com sucesso!')
@@ -135,7 +134,7 @@ function Documentos() {
       <div className='container'>
         <main className='main-content'>
           <div className="row-title">
-            <h3 style={{ minWidth: 95 }} >{camposUTF[0]}</h3>
+            <h3 style={{ minWidth: 120 }} >{camposUTF[0]}</h3>
             <h3 style={{ minWidth: 250 }} >{camposUTF[1]}</h3>
             <h3 style={{ minWidth: 530 }} >{camposUTF[2]}</h3>
             <h3 style={{ minWidth: 150 }} >{camposUTF[3]}</h3>
@@ -145,14 +144,15 @@ function Documentos() {
             </button>
 
           </div>
-          {documentos.map(item => {
+          {documentos.map((item,i) => {
             return (<LinhaDocumento
               key={item._id}
               id={item._id}
-              identificador={item.docPadrao.identificador}
+              identificador={item.identificador_doc}
               titulo={item.docPadrao.titulo}
               descricao={item.docPadrao.descricao}
               data={dateFormat(item.data, "dd/mm/yyyy")}
+              camposObj={documentos[i].camposObj}
               adm={admBool}
               remove={() => handleRemoveDocumento(item._id)}
             />)

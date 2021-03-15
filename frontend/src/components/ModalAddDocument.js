@@ -20,11 +20,16 @@ function ModalAddDocument(props) {
             <button className='fecharBtn' onClick={props.hide}>
               <XCircle color={'red'} size={40} />
             </button>
-            <button className='anexarDocBtn'>
+            {/* <button className='anexarDocBtn'>
               <Paperclip />
                 Anexar Arquivo como Documento
               <Paperclip />
-            </button>
+            </button> */}
+            {props.docs.length == 0 ? (
+              <h1 style={{fontSize: 30, textDecoration: 'underline'}}>
+                Nenhum formulário acrescentado pelo Administrador na sua área ainda!
+              </h1>
+            ): null}
             {props.docs.map(item => {
               return (<button key={item._id} id={item._id} 
                 onClick={handleClickDoc}>{item.identificador} {item.titulo}</button>)

@@ -53,43 +53,41 @@ function CriarPadrao() {
       console.log(camposPreenchidosObj)
 
       await api.post('/docPadrao', { identificador, titulo, area, descricao, camposObj: camposPreenchidosObj },
-        { headers: { adm_id: localStorage.getItem('user') } }) //Tem q mudar pra dinamico!!!!!!!!
+        { headers: { adm_id: localStorage.getItem('user') } }) 
         .then(() => {
           alert('Deu certo!')
+          let msg_auditoria = `Administrador Adicionou Formulário Padrão - ${identificador} ${titulo} - em ${area}`
+          const adm_id = localStorage.getItem('user')
+
+          api.post('/auditoria', { descricao: msg_auditoria }, { headers: { adm_id } })
+            .then(() => {
+              alert('Auditado!')       //To fznd aqui pra evitar de receber os param. como ''     
+              setListaLabels([])
+              setListaLabelsPreenchidos([])
+              setQntLabels(0)
+              setIdentificador('')
+              setTitulo('')
+              setDescricao('')
+              setArea('')
+              updatePage() // Gambiarra das braba, sabe Deus pq mas se colocar + da pau kkk
+              //alert(formularios.length)
+              setFormularios([...formularios]) //o react é burrinho e tenho q avisar ele
+            })
+            .catch(e => {
+              alert('Deu ruim na auditoria')
+              console.error(e)
+            })
         })
         .catch(e => { alert(`Erro ao criar formulário!\n${e.response.data.error}`) })
 
-      let msg_auditoria = `Administrador Adicionou Formulário Padrão - ${identificador} ${titulo} - em ${area}`
-      const adm_id = localStorage.getItem('user')
-
-      await api.post('/auditoria', { descricao: msg_auditoria }, { headers: { adm_id } })
-        .then(() => {
-          alert('Auditado!')       //To fznd aqui pra evitar de receber os param. como ''     
-          setListaLabels([])
-          setListaLabelsPreenchidos([])
-          setQntLabels(0)
-          setIdentificador('')
-          setTitulo('')
-          setDescricao('')
-          setArea('')
-          updatePage() // Gambiarra das braba, sabe Deus pq mas se colocar + da pau kkk
-          //alert(formularios.length)
-          setFormularios([...formularios]) //o react é burrinho e tenho q avisar ele
-        })
-        .catch(e => {
-          alert('Deu ruim na auditoria')
-          console.error(e)
-        })
     }
     else if (listaLabelsPreenchidos.length === 0) {
       alert('Aperte o botão de + para adicionar campos ao formulário!')
     } else (alert('Preencha os campos obrigatórios!'))
-
-
   }
 
   function addCampoHandler() {
-    //console.log('Apertou o butão!')
+    //console.log('Apertou o botão!')
     setQntLabels(qntLabels + 1)
     //console.log(qntLabels)
     setListaLabels([...listaLabels,
@@ -98,7 +96,7 @@ function CriarPadrao() {
   }
 
   function minusCampoHandler() {
-    //console.log('Apertou o butão!')
+    //console.log('Apertou o botão!')
     setQntLabels(qntLabels - 1)
     //console.log(qntLabels)
     let listaLabelsAux = listaLabels

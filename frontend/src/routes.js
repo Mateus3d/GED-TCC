@@ -10,6 +10,7 @@ import Funcionarios from './pages/Funcionarios'
 import Auditoria from './pages/Auditoria'
 import Verificacao from './pages/Verificacao'
 import VEDocumento from './pages/VEDocumento'
+import AddAnexo from './pages/AddAnexo'
 
 function Routes() {
   return (
@@ -25,6 +26,7 @@ function Routes() {
         <Route path='/auditoria' exact component={Auditoria} />
         <Route path='/verificacao' exact component={Verificacao} />
         <Route path='/documento' exact component={VEDocumento} /> {/* Gambiarra pura, mas fzr oq */}
+        <Route path='/addanexo' exact component={AddAnexo} />
       </Switch>
     </BrowserRouter>
 

@@ -9,11 +9,15 @@ module.exports = {
   },
 
 	async store(req,res) {
-		const {cnpj,username,senha} = req.body
+		const {cnpj,username,senha} = req.body //Atribui os dados recebidos do corpo da requisição
+    var numbers = /^[0-9]+$/; //regex pra verificar se é numero
+    if(!cnpj.match(numbers))
+      return res.status(400).json({error: 'CNPJ só aceita números!'})
 
-		let adm = await Adm.findOne().or([{ cnpj },{username}]) //encontre alguem com cnpj = cnpj or username = username
+		let adm = await Adm.findOne().or([{ cnpj },{username}]) 
+    //procura alguma conta que já contenha os mesmos dados
 
-		if(!adm) { //se ñ encontrar o adm entao cria
+		if(!adm) { //se não encontrar um adm com esses dados, então permite a criação
       adm = await Adm.create({cnpj,username,senha})
       .catch(e =>{
         return res.status(400).json({error: 'Algo deu errado ao cadastrar'})

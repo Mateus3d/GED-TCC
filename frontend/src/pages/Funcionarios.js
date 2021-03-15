@@ -12,21 +12,16 @@ function Funcionarios() {
   const [listaFuncionarios, setListaFuncionarios] = useState([])
   const [novoFuncionario, setNovoFuncionario] = useState()
   const [searchParams, setSearchParams] = useState('')
-
+  
   useEffect(() => {
-    const adm_id = localStorage.getItem('user')
-    api.get('/funcionarios', { headers: { adm_id }, params: searchParams })
-      .then(res => {
-        setListaFuncionarios(res.data.reverse())
-        console.log(res.data)
-      }).catch(e => { alert('Erro!!') })
-    console.log(listaFuncionarios)
+    handleUpdateListaFunc()    
   }, [listaFuncionarios.length, searchParams])
 
   function addFuncHandler() {
     setNovoFuncionario(<LinhaFuncionario ident={''} nome={''}
       area={''} login={''} senha={''} removeNovoFunc={handleRemoveNovoFunc}
       handleUpdateListaFunc={handleUpdateListaFunc} //pra poder atualizar o bendito
+      editaInicial={true}
     />)
   }
 

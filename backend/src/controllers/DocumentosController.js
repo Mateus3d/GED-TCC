@@ -6,12 +6,32 @@ const Funcionario = require('../models/Funcionario')
 const dateFormat = require('dateformat')
 
 //Campos compreende a criação de um formulário pelo ADM
+async function geraidentificadorDoc(documento_id, adm_id, docPadrao) {
+  let documentos
+  documentos = await Documento.find({ adm: adm_id }).populate('docPadrao') //Tem ainda q buscar o adm_id se for func
+    .catch(e => {
+      console.error(e)
+      return res.json({ error: 'Problema ao buscar documentos' })
+    })
+  if (documentos) {
+    documentos = documentos.filter(doc => {
+      return doc.docPadrao._id == documento_id
+    }) 
+  }
+  //Para deixar no formato 0012 e.g.
+  var str = "" + (documentos.length+1)
+  var pad = "0000"
+  var numeracao = pad.substring(0, pad.length - str.length) + str
+  const identificador_doc = docPadrao.identificador + '-' + numeracao
+  return identificador_doc
+  //console.log(identificador_doc)
+}
 
 module.exports = {
   async index(req, res) { //Por questão de seguranca acho q vou ter q mudar aqui
     const { func_id } = req.headers
     let { adm_id } = req.headers
-    const { identificador, titulo, descricao, data } = req.query
+    const { identificador_doc, titulo, descricao, data } = req.query
     let documentos, funcionario
 
     if (func_id) {
@@ -21,10 +41,10 @@ module.exports = {
         })
       adm_id = funcionario.adm //Se ñ vier do adm diretamente, o funcionario preenche
       if (funcionario.length === 0)
-        return res.status(400).json({error: 'Funcionário não encontrado!'})
+        return res.status(400).json({ error: 'Funcionário não encontrado!' })
     }
 
-    documentos = await Documento.find({adm: adm_id}) //como adm está dentro de docPadrao preciso popular pra dps filtrar
+    documentos = await Documento.find({ adm: adm_id }) //como adm está dentro de docPadrao preciso popular pra dps filtrar
       .populate('docPadrao') //Lista todos pq tenho q popular pra dps filtrar
       .catch(e => {
         console.error(e)
@@ -40,11 +60,11 @@ module.exports = {
       }
     }
 
-
-    if (identificador || titulo || descricao || data) { //para pesquisa
+    if (identificador_doc || titulo || descricao || data) { //para pesquisa
+      console.log(identificador_doc)      
       documentos = documentos.filter(doc => {
         if (doc.docPadrao.titulo.toLowerCase().includes(titulo.toLowerCase()) &&
-          doc.docPadrao.identificador.toLowerCase().includes(identificador) &&
+          doc.identificador_doc.toLowerCase().includes(identificador_doc) &&
           doc.docPadrao.descricao.toLowerCase().includes(descricao.toLowerCase()) &&
           String(dateFormat(doc.data, 'dd/mm/yyyy')).includes(data)) {
           return doc
@@ -73,8 +93,11 @@ module.exports = {
   async store(req, res) {
     //const { func_id } = req.headers
     let { adm_id, func_id } = req.headers
-    const { documento_id } = req.params
-    const  camposObj  = req.body //Agr estou transformando oq vem como multipart no camposObj
+    const { documento_id } = req.params //id do DocPadrao
+    const camposObj = req.body //Agr estou transformando oq vem como multipart no camposObj
+    let identificador_doc //FR01-0023 e.g.
+    let docPadrao
+    //let documentos //pesquiso quantos documentos já foram preenchidos pra colocar no identificador do documento
     var filenames = req.files.map(file => {
       return file.filename;
     })
@@ -83,19 +106,23 @@ module.exports = {
     console.log(req.files)
 
     if (documento_id) {
-      let docPadrao = await DocPadrao.findById(documento_id)
+      docPadrao = await DocPadrao.findById(documento_id)
         .catch(e => {
           console.error(e)
           return res.status(400)
         })
-      if (docPadrao.length === 0) {
-        return res.status(400).json({ error: 'Formulário referenciado não existe' })
-      }
+      if (docPadrao)
+        if (docPadrao.length === 0)
+          return res.status(400).json({ error: 'Formulário referenciado não existe' })
     }
 
     if (adm_id) { //Se vier pelo header, então QUEM ESTÁ CRIANDO é um ADM
+      identificador_doc = await geraidentificadorDoc(documento_id, adm_id, docPadrao)
       documentoNovo = await Documento
-        .create({ camposObj, adm: adm_id, funcionario: adm_id, docPadrao: documento_id, arquivos: filenames  })
+        .create({
+          identificador_doc,camposObj, adm: adm_id, funcionario: adm_id, docPadrao: documento_id,
+          arquivos: filenames
+        })
         .catch(e => {
           console.log(e)
           return res.status(400).json({ error: 'Erro ao criar documento' })
@@ -115,10 +142,11 @@ module.exports = {
         adm_id = funcionario.adm
         //console.log(adm_id)
       }
-
-      // PROBLEMA!! O ADM_ID É MEIO FODA DE FICAR MANDANDO TODA VEZ. TEM Q VER SE DEIXA OU TIRA..
+      //Mandando como funcionário
+      identificador_doc = await geraidentificadorDoc(documento_id, adm_id, docPadrao)
       documentoNovo = await Documento
-      .create({ camposObj, adm: adm_id, funcionario: func_id, docPadrao: documento_id, arquivos: filenames })
+        .create({ identificador_doc, camposObj, adm: adm_id, funcionario: func_id, 
+          docPadrao: documento_id, arquivos: filenames })
         .catch(e => {
           console.log(e)
           return res.status(400).json({ error: 'Erro ao criar documento' })
@@ -126,7 +154,7 @@ module.exports = {
 
       return res.json(documentoNovo)
     } else {
-      return res.status(400).json({error: 'Não recebi dados nem do funcionario ou adm'})
+      return res.status(400).json({ error: 'Não recebi dados nem do funcionario ou adm' })
     }
   },
 
@@ -153,21 +181,21 @@ module.exports = {
     const adm = await Adm.findById(adm_id)
       .catch(e => {
         console.error(e)
-        return res.status(400).json({error: 'Houve algum erro com o adm'})
+        return res.status(400).json({ error: 'Houve algum erro com o adm' })
       })
-		if (!adm) {
-			return res.status(400).json({error: 'Erro de autenticacao'})
-		}
+    if (!adm) {
+      return res.status(400).json({ error: 'Erro de autenticacao' })
+    }
 
     const { documento_id } = req.params
-    const  camposObj = req.body
-    if (req.files){
+    const camposObj = req.body
+    if (req.files) {
       var filenames = req.files.map(file => {
         return file.filename;
       })
-    }  
-   //console.log(camposObj) 
-   //console.log(req.files)
+    }
+    //console.log(camposObj) 
+    //console.log(req.files)
 
     let documentos = await Documento.findById(documento_id)
       .catch(e => {

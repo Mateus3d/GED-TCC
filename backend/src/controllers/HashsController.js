@@ -19,7 +19,7 @@ module.exports = {
     const arquivo = req.file
     //console.log(arquivo)
     //Tenho q pegar o arquivo e fzr o hash dele!!!!!!!!!!
-     let teste = fs.readFileSync(arquivo.path, 'base64')
+    let teste = fs.readFileSync(arquivo.path, 'base64')
     let sum = crypto.createHash('sha256');
     sum.update(teste);
     const hex = sum.digest('hex');
@@ -36,8 +36,19 @@ module.exports = {
       return res.json({ validado: true })
     } else {
       return res.json({ validado: false })
-    } 
+    }
     //return res.json({msg: 'oi'})
+  },
+
+  async storeRaw(req, res) {
+    const hash = req.params.h
+    const {documento} = req.headers
+    const novoHash = await Hash.create({ hashs: hash, documento })
+      .catch(e => {
+        console.error(e)
+        return res.status(400).json({ error: 'Algum erro ocorreu ao enviar o hash' })
+      })
+    return res.json(novoHash)
   },
 
   async store(req, res) { //Qnd mando um arquivo para cá ele deve gerar o hash e armazenar
@@ -57,16 +68,6 @@ module.exports = {
       return res.status(400).json({ error: 'Não detectei os arquivos!' })
     }
 
-    /* if (hashs) {
-      hashs.map(async hash => {
-        await Hash.create({ hash, documento })
-          .catch(e => {
-            console.error(e)
-            return res.status(400).json({ error: 'Algum erro ocorreu ao enviar o hash' })
-          })
-      })
-      return res.json(hashs)
-    } */
     if (hashs) {
       const novosHashs = await Hash.create({ hashs, documento })
         .catch(e => {
@@ -83,18 +84,18 @@ module.exports = {
   },
 
   async destroy(req, res) { //Deleta 1!!!!!!!!
-    const {documento_id} = req.params
+    const { documento_id } = req.params
 
-    const hashDeletado = await Hash.findOneAndDelete({documento: documento_id})
+    const hashDeletado = await Hash.findOneAndDelete({ documento: documento_id })
       .catch(e => {
         console.error(e)
         return res.status(400).json({ error: 'Deu pau no hash pra deletar' })
       })
-    
-    if(hashDeletado) { //Se não for null é pq deletou
+
+    if (hashDeletado) { //Se não for null é pq deletou
       return res.json(hashDeletado)
     } else {//Se é null é pq não encontrou
-      return res.json({message: 'Não encontrei pra deletar...'})
+      return res.json({ message: 'Não encontrei pra deletar...' })
     }
   }
 

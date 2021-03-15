@@ -20,7 +20,7 @@ function Login() {
     const data = {username,senha}
     api.post('/login', data)
         .then((response) => {
-          alert('Deu certo')
+          alert('Bem vindo!')
           localStorage.setItem('user', response.data.id)
           //console.log(response.data) //Aqui tem o id e adm =true ou false
           if (response.data.adm){
@@ -32,7 +32,7 @@ function Login() {
           }
         })
         .catch(e => {
-          alert('Deu ruim')
+          alert('Usuário ou senha incorretos!')
         })
   }
 

@@ -7,12 +7,7 @@ import api from '../services/api';
 import { useHistory } from 'react-router-dom';
 import arquivo_icon from '../images/archive_icon.png'
 
-//A confirmação ou negação serão feitos nessa tela mesma posteriormente
-//Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
 function VEDocumento() {
-  //useEffect carregando os dados
-  //states dos inputs
-  //funcao pra fzr o post e mudar de tela
   const [identificador, setIdentificador] = useState('')
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
@@ -43,7 +38,7 @@ function VEDocumento() {
 
     api.get(`/documentos/${documento_id}`)
       .then(res => { //Tenho q descobrir como passar por aqui. Provavelmente pelo localStorage
-        setIdentificador(res.data.docPadrao.identificador) //Só vem um doc em array, por isso colocar 
+        setIdentificador(res.data.identificador_doc) //Só vem um doc em array, por isso colocar 
         setTitulo(res.data.docPadrao.titulo)
         setDescricao(res.data.docPadrao.descricao)
         setListaLabels(Object.keys(res.data.camposObj)) //transforma o obj em array (os labels no caso)
@@ -72,7 +67,7 @@ function VEDocumento() {
       arrayLabelsInputs.push([label, listaInputs[i]])
     })
     // gerando nssa estrutura [[A,a],[B,b],[C,c]] para transformar em obj pra mandar pro mongo
-    const camposPreenchidosObj = Object.fromEntries(arrayLabelsInputs)
+    //const camposPreenchidosObj = Object.fromEntries(arrayLabelsInputs)
 
     //console.log(camposPreenchidosObj)
     let identificador_doc = '', titulo_doc = '', area_doc = ''
@@ -93,7 +88,7 @@ function VEDocumento() {
       alert('Documento ATUALIZADO com sucesso!')
       localStorage.removeItem('documento_id')
       localStorage.removeItem('docPadrao_id')
-      identificador_doc = res.data.docPadrao.identificador
+      identificador_doc = res.data.identificador_doc
       titulo_doc = res.data.docPadrao.titulo
       area_doc = res.data.docPadrao.area
       //area_doc = res.data.docPadrao.area //Tenho q colocar a area no docPadrao dps
@@ -230,7 +225,7 @@ function VEDocumento() {
           arquivosURLs.map((arqURL, i) => {
             return (
               <section key={i} className="preview-section">
-                {arqURL.includes('.jpg') || arqURL.includes('.png') ? (   //se for imagem gera o preview
+                {arqURL.includes('.jpg') || arqURL.includes('.png') || arqURL.includes('.jpeg')? (   //se for imagem gera o preview
                   <a style={{ backgroundImage: `url(${arqURL})` }} target='_blank' href={arqURL}
                     className='preview-visible' />
                 ) : ( //se não coloca o ícone
