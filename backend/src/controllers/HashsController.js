@@ -99,7 +99,7 @@ module.exports = {
     }
   }
 
-  /* async destroy(req, res) { //Deleta tudo!!!!!!!!!!!!!!!
+   /*async destroy(req, res) { //Deleta tudo!!!!!!!!!!!!!!!
     const hashs = await Hash.find()
 
     hashs.map(async hash => {

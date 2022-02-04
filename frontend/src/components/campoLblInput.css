@@ -21,7 +21,7 @@ div.div-campo .input-disabled {
 div.div-campo label textarea {
     padding: 10px;
     border: 2px solid var(--azulOutline);
-    color: var(--cinzaLabel);    
+    color: black;    
     background: white;
     min-height: 40px;
     filter: none;    

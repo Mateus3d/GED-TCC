@@ -163,5 +163,12 @@ module.exports = {
       return res.status(400).json({ error: 'Funcionario nao encontrado!' })
     }
   }
+    //Deletar tudo!!!
+   /* const funcionarios = await Funcionario.find()
+    funcionarios.map(async item => {
+      await Funcionario.findByIdAndDelete(item._id)
+    })
+    return res.json({message: 'TUDO deletado!!!'})
+  }*/
 
 }

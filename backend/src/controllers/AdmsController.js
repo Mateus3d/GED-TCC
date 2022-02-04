@@ -31,8 +31,15 @@ module.exports = {
 
   async destroy(req,res) {
     const {id} = req.params
-    await Adm.findByIdAndDelete(id)
-    return res.json({message: 'ADM Deletado com sucesso'})
+    const adm = await Adm.findByIdAndDelete(id)
+    .catch(e => {
+      return res.status(400).json({error: 'Algo deu errado!'})
+    })
+    if (adm) {
+      return res.json({message: 'ADM Deletado com sucesso'})
+    } else {
+      return res.status(400).json({message: 'ADM não foi localizado!'})
+    }
   } 
 
 

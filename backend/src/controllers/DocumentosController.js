@@ -70,8 +70,8 @@ module.exports = {
           return doc
         }
       })
-    }
-
+    } 
+    //const documentos = await Documento.find()
     return res.json(documentos)
   },
 

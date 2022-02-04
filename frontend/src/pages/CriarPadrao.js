@@ -102,6 +102,9 @@ function CriarPadrao() {
     let listaLabelsAux = listaLabels
     listaLabelsAux.pop()
     setListaLabels(listaLabelsAux)
+    let listaLabelsPreenchidosAux = listaLabelsPreenchidos
+    listaLabelsPreenchidosAux.pop()
+    setListaLabelsPreenchidos(listaLabelsPreenchidosAux)
 
     //console.log(listaLabels)
   }

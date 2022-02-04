@@ -52,7 +52,8 @@ module.exports = {
     } else {
       return res.status(400).json({error: 'Houve algum erro'})
     }
-    
+    // const docsPadrao = await DocPadrao.find()
+    // return res.json(docsPadrao)
   },
 
   async show(req, res) {
@@ -116,6 +117,13 @@ module.exports = {
         console.error(e)
         res.status(400).json({ error: 'Algo deu errado ao deletar!' })
       })
+    
+    //Pra deletar TUDO!
+    /* const docPadrao = await DocPadrao.find()
+    docPadrao.map(async item => {
+      await DocPadrao.findByIdAndDelete(item._id)
+    })
+    return res.json({message: 'TUDO deletado!!!'}) */
 
     return res.json({ message: 'Deletado' })
   }
