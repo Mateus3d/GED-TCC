@@ -3,7 +3,8 @@ import { Edit3, Eye, PlusCircle, Share2, XCircle } from 'react-feather';
 import { useHistory } from 'react-router-dom';
 import api from '../services/api';
 import './linhaDocumento.css'
-import crypto from 'crypto'
+// import crypto from 'crypto'
+import { SHA256 } from 'crypto-js';
 
 //props.title, props.search,props.adm: boolean,
 function LinhaDocumento(props) {
@@ -11,7 +12,7 @@ function LinhaDocumento(props) {
 
   function handleEdit(e) {
     localStorage.setItem('documento_id', props.id)
-    history.push('/documento') //Aqui é para editar ou visualizar ////////////////////////////PAU
+    history.push('/documento') //Aqui é para editar ou visualizar 
     console.log(props.id)
     console.log(props.titulo)
   }
@@ -59,11 +60,12 @@ function LinhaDocumento(props) {
           reader.onloadend = function () {
             var base64data = reader.result;
             base64 = base64data.split(',')[1];
-            let sum = crypto.createHash('sha256');
+            /*let sum = crypto.createHash('sha256');
             sum.update(String(base64));
-            const hex = sum.digest('hex');
-            //console.log(hex)
-            geraHashPDF(hex)
+            const hex = sum.digest('hex');*/
+            let hash = SHA256(base64)
+            console.log(hash)
+            geraHashPDF(hash)
             //console.log(base64);
           }
           //blob.text().then(text => console.log(text));

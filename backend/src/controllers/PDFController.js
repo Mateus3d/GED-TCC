@@ -5,19 +5,10 @@ const Adm = require('../models/Adm');
 module.exports = {
   async store(req, res) {
     const { labels, inputs, titulo } = req.body
-    const { adm_id } = req.headers
+    // const { adm_id } = req.headers
 
     console.log(labels)
     console.log(inputs)
-    const adm = await Adm.findById(adm_id)
-      .catch(e => {
-        console.error(e)
-        return res.status(400).json({ error: 'Algo deu errado ao buscar o id do Adm' })
-      })
-
-    if (!adm) {
-      return res.status(400).json({ msg: 'Erro de autenticação' })
-    }
 
     const pdf = new PDFKit();
     //Titulo

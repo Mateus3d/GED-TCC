@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Check, Edit3, Eye, PlusCircle, Share2, XCircle } from 'react-feather';
 import api from '../services/api';
 import './linhaFuncionario.css'
+import { parseJwt } from '../Utils';
 
 //props.title, props.search,props.adm: boolean,
 function LinhaFuncionario(props) {
@@ -12,13 +13,14 @@ function LinhaFuncionario(props) {
   const [login, setLogin] = useState(props.login)
   const [senha, setSenha] = useState(props.senha)
 
+  const adm_id = parseJwt().sub
+
   useEffect(() => {
     if (props.editaInicial)
       setEdita(true)
   })
 
   function toggleEnableEdit() {
-    const adm_id = localStorage.getItem('user')
     setEdita(!edita)
     if (edita) {
       if (!props.id) { //entende-se q não foi criado ainda
@@ -51,7 +53,6 @@ function LinhaFuncionario(props) {
         newFuncionario()
 
       } else {
-        const adm_id = localStorage.getItem('user')
         console.log('update nele')
         console.log('id: ', props.id)
         api.put(`/funcionarios/${props.id}`, { identificador, nome, area, username: login, senha },
@@ -80,7 +81,6 @@ function LinhaFuncionario(props) {
   }
 
   function handleRemove() {
-    const adm_id = localStorage.getItem('user')
     if (props.id) {
       console.log('bora deletar')
       async function funcionarios() {
@@ -137,7 +137,8 @@ function LinhaFuncionario(props) {
       />
       <input disabled={!edita} type={!edita ? 'password' : 'text'}
         style={!edita ? { color: 'var(--cinzaTextDisabled)' } : { color: 'black' }}
-        value={senha}
+        // value={senha}
+        placeholder={'***'}
         onChange={e => { setSenha(e.target.value) }}
       />
 

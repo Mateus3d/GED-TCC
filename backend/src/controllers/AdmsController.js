@@ -1,5 +1,6 @@
 //index, show, store, update, destroy
 const Adm = require('../models/Adm') //O model (tabela do BD)
+const bcrypt = require('bcrypt')
 
 module.exports = {
   async index(req, res) {
@@ -18,7 +19,11 @@ module.exports = {
     //procura alguma conta que já contenha os mesmos dados
 
 		if(!adm) { //se não encontrar um adm com esses dados, então permite a criação
-      adm = await Adm.create({cnpj,username,senha})
+
+      const salt = await bcrypt.genSalt(12)
+      const passwordHash = await bcrypt.hash(senha, salt)
+
+      adm = await Adm.create({cnpj,username,senha: passwordHash})
       .catch(e =>{
         return res.status(400).json({error: 'Algo deu errado ao cadastrar'})
       })

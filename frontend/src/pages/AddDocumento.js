@@ -6,6 +6,7 @@ import '../styles/addDocumento.css'
 import api from '../services/api';
 import { useHistory } from 'react-router-dom';
 import arquivo_icon from '../images/archive_icon.png'
+import { parseJwt } from '../Utils';
 
 //A confirmação ou negação serão feitos nessa tela mesma posteriormente
 //Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
@@ -20,6 +21,7 @@ function AddDocumento() {
   const [arquivos, setArquivos] = useState([])
 
   const history = useHistory()
+  const isAdm = parseJwt().adm
 
   const preview = useMemo(() => {
     let res
@@ -57,12 +59,12 @@ function AddDocumento() {
 
   async function audita() {
     //let identificador_func = await Funcionario.findById(id_func) //tem ainda q pegar o id do func caso exista
-    let user = localStorage.getItem('user')
-    let adm = localStorage.getItem('adm')
+    let user = parseJwt().sub
+    console.log('user:',user)
     let nome_user = '', identificador_user = ''//, area = ''
     let adm_id
 
-    if (adm === 'true') {
+    if (isAdm) {
       nome_user = 'Administrador'
       adm_id = user
       alert('Vou auditar como ADM ok?')
@@ -79,7 +81,7 @@ function AddDocumento() {
         })
         .catch(e => {
           console.error(e)
-          alert('Algo deu errado na auditoria do FUNCIONÁRIO!')
+          alert('AddDocumento: Algo deu errado na auditoria do FUNCIONÁRIO!')
         })
     }
     console.log('Nome: ', nome_user)
@@ -88,7 +90,7 @@ function AddDocumento() {
     //Tenho q consertar pro ADM!!!!!!!!!!
     let descricao = `${nome_user} Adicionou - ${identificador} ${titulo} - em ${area}`
     let data
-    if (adm === 'true')
+    if (isAdm)
       data = { descricao }
     else
       data = { identificador: identificador_user, descricao }
@@ -114,7 +116,7 @@ function AddDocumento() {
     console.log(camposPreenchidosObj)
     console.log('docPadrao: ', idDocPadrao)
 
-    const func_id = localStorage.getItem('user')
+    const func_id = parseJwt().sub
     //Isso é para mandar como multipartform
     const data = new FormData()
     listaLabels.map((label, i) => {
@@ -125,8 +127,7 @@ function AddDocumento() {
       if (arq)
         return data.append('arquivos', arq)
     })
-    let documento_id
-    if (localStorage.getItem('adm') === 'true') {
+    if (isAdm) {
       api.post(`/documentos/${idDocPadrao}`, data,//{ camposObj: camposPreenchidosObj },
         { headers: { adm_id: func_id } }
       ).then(async res => {

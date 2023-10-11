@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import CampoLblInput from '../components/CampoLblInput'
 import api from '../services/api'
 import '../styles/criarPadrao.css'
+import { parseJwt } from '../Utils'
 
 function CriarPadrao() {
   const [qntLabels, setQntLabels] = useState(0)
@@ -16,7 +17,7 @@ function CriarPadrao() {
 
   const [listaLabelsPreenchidos, setListaLabelsPreenchidos] = useState([])
   const [formularios, setFormularios] = useState([])
-  let adm_id
+  const adm_id = parseJwt().sub
 
 
   useEffect(() => {
@@ -25,7 +26,6 @@ function CriarPadrao() {
   }, [formularios.length])
 
   function updatePage() {
-    adm_id = localStorage.getItem('user')
     api.get('/docPadrao', { headers: { adm_id } })
       .then(res => {
         //console.log(res.data)
@@ -53,11 +53,10 @@ function CriarPadrao() {
       console.log(camposPreenchidosObj)
 
       await api.post('/docPadrao', { identificador, titulo, area, descricao, camposObj: camposPreenchidosObj },
-        { headers: { adm_id: localStorage.getItem('user') } }) 
+        { headers: { adm_id } }) 
         .then(() => {
           alert('Deu certo!')
           let msg_auditoria = `Administrador Adicionou Formulário Padrão - ${identificador} ${titulo} - em ${area}`
-          const adm_id = localStorage.getItem('user')
 
           api.post('/auditoria', { descricao: msg_auditoria }, { headers: { adm_id } })
             .then(() => {

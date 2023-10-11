@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import ClipBtn from '../images/Clip_Button.svg'
 import EnviarBtn from '../images/Enviar_Button.svg'
 import Header3DBack from '../components/Header3DBack';
@@ -6,6 +6,8 @@ import '../styles/addDocumento.css'
 import api from '../services/api';
 import { useHistory } from 'react-router-dom';
 import arquivo_icon from '../images/archive_icon.png'
+import { parseJwt } from '../Utils';
+import { Context } from '../context/AuthContext';
 
 function VEDocumento() {
   const [identificador, setIdentificador] = useState('')
@@ -18,6 +20,7 @@ function VEDocumento() {
   const [arquivosNomes, setArquivosNomes] = useState([])
   const [arquivos, setArquivos] = useState([]) //Esse aqui é dos arquivos que são acrescentados 
   let documento_id = ''
+  const isAdm = parseJwt().adm
 
   const history = useHistory()
 
@@ -60,7 +63,7 @@ function VEDocumento() {
   async function handleSubmit() {
     console.log('oi', documento_id)
     const idDocumento = localStorage.getItem('documento_id')
-    const adm_id = localStorage.getItem('user')
+    const adm_id = parseJwt().adm_id
 
     let arrayLabelsInputs = []
     listaLabels.map((label, i) => {
@@ -117,7 +120,7 @@ function VEDocumento() {
 
     <div id='page-addDocumento'>
 
-      <Header3DBack title={localStorage.getItem('adm') === 'true' ? 'Editar Documento' : 'Documento'}
+      <Header3DBack title={isAdm ? 'Editar Documento' : 'Documento'}
         search={false} backTo='/documentos'
         backFunc={() => { //Ao clicar em voltar tem q limpar
           localStorage.removeItem('documento_id')
@@ -137,7 +140,7 @@ function VEDocumento() {
                 return (
                   <div key={i}>
                     <label>{item}: </label>
-                    {localStorage.getItem('adm') === 'true' ? (
+                    {isAdm ? (
                       <textarea id={i} type="text"
                         value={listaInputs[i]}
                         onChange={e => {
@@ -162,7 +165,7 @@ function VEDocumento() {
                 return (
                   <div key={i}>
                     <label htmlFor="Campo">{item}: </label>
-                    {localStorage.getItem('adm') === 'true' ? (
+                    {isAdm ? (
                       <textarea id={i} type="text"
                         value={listaInputs[i]}
                         onChange={e => {
@@ -181,7 +184,7 @@ function VEDocumento() {
           </aside>
         </article>
 
-        {localStorage.getItem('adm') === 'true' ? (
+        {isAdm ? (
           <section className='buttons'>
             <div>
               <h3>Anexar<br></br> Arquivo</h3>

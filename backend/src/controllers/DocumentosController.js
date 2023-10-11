@@ -29,8 +29,13 @@ async function geraidentificadorDoc(documento_id, adm_id, docPadrao) {
 
 module.exports = {
   async index(req, res) { //Por questão de seguranca acho q vou ter q mudar aqui
-    const { func_id } = req.headers
-    let { adm_id } = req.headers
+    // const { func_id } = req.headers
+    // let { adm_id } = req.headers
+    let adm_id, func_id
+    if (req.isAdm) 
+      adm_id = req.sub
+    else 
+      func_id = req.sub
     const { identificador_doc, titulo, descricao, data } = req.query
     let documentos, funcionario
 
@@ -62,14 +67,35 @@ module.exports = {
 
     if (identificador_doc || titulo || descricao || data) { //para pesquisa
       console.log(identificador_doc)      
-      documentos = documentos.filter(doc => {
-        if (doc.docPadrao.titulo.toLowerCase().includes(titulo.toLowerCase()) &&
-          doc.identificador_doc.toLowerCase().includes(identificador_doc) &&
-          doc.docPadrao.descricao.toLowerCase().includes(descricao.toLowerCase()) &&
-          String(dateFormat(doc.data, 'dd/mm/yyyy')).includes(data)) {
-          return doc
-        }
-      })
+      //Filtrando pelos QueryParams  
+      if (identificador_doc) {
+        documentos = documentos.filter(doc => {
+          if (doc.identificador_doc?.toLowerCase().includes(identificador_doc)) { return doc }
+        })
+      }
+      if (titulo) {
+        documentos = documentos.filter(doc => {
+          if (doc.docPadrao.titulo?.toLowerCase().includes(titulo)) { return doc }
+        })
+      }
+      if (descricao) {
+        documentos = documentos.filter(doc => {
+          if (doc.docPadrao.descricao?.toLowerCase().includes(descricao)) { return doc }
+        })
+      }
+      if (data) {
+        documentos = documentos.filter(doc => {
+          if (String(dateFormat(doc.data, 'dd/mm/yyyy')).includes(data)) { return doc }
+        })
+      }
+      // documentos = documentos.filter(doc => {
+      //   if (doc.docPadrao.titulo.toLowerCase().includes(titulo.toLowerCase()) &&
+      //     doc.identificador_doc.toLowerCase().includes(identificador_doc) &&
+      //     doc.docPadrao.descricao.toLowerCase().includes(descricao.toLowerCase()) &&
+      //     String(dateFormat(doc.data, 'dd/mm/yyyy')).includes(data)) {
+      //     return doc
+      //   }
+      // })
     } 
     //const documentos = await Documento.find()
     return res.json(documentos)
@@ -77,12 +103,13 @@ module.exports = {
 
   async show(req, res) {
     const { documento_id } = req.params
-    documentos = await Documento.findById(documento_id).populate('docPadrao')//LISTAR 1 DOC
+    const adm_id = req.adm_id
+    documentos = await Documento.findOne({_id: documento_id, adm: adm_id}).populate('docPadrao')//LISTAR 1 DOC
       .catch(e => {
         console.error(e)
         return res.status(400).json({ error: 'Algo deu errado ao procurar!!' })
       })
-    if (documentos.length === 0) {
+    if (documentos && documentos.length === 0) {
       return res.status(400).json({ error: 'Documento não encontrado!!' })
     }
     else {
@@ -92,9 +119,13 @@ module.exports = {
 
   async store(req, res) {
     //const { func_id } = req.headers
-    let { adm_id, func_id } = req.headers
-    const { documento_id } = req.params //id do DocPadrao
-    const camposObj = req.body //Agr estou transformando oq vem como multipart no camposObj
+    let adm_id, func_id
+    if (req.isAdm) 
+      adm_id = req.sub
+    else 
+      func_id = req.sub
+    const { docPadrao_id } = req.params //id do DocPadrao
+    const camposObj = req.body //Transforma oq vem como multipart no camposObj
     let identificador_doc //FR01-0023 e.g.
     let docPadrao
     //let documentos //pesquiso quantos documentos já foram preenchidos pra colocar no identificador do documento
@@ -105,8 +136,8 @@ module.exports = {
     console.log(req.body)
     console.log(req.files)
 
-    if (documento_id) {
-      docPadrao = await DocPadrao.findById(documento_id)
+    if (docPadrao_id) {
+      docPadrao = await DocPadrao.findById(docPadrao_id)
         .catch(e => {
           console.error(e)
           return res.status(400)
@@ -114,13 +145,14 @@ module.exports = {
       if (docPadrao)
         if (docPadrao.length === 0)
           return res.status(400).json({ error: 'Formulário referenciado não existe' })
-    }
-
-    if (adm_id) { //Se vier pelo header, então QUEM ESTÁ CRIANDO é um ADM
-      identificador_doc = await geraidentificadorDoc(documento_id, adm_id, docPadrao)
+    } else 
+        return res.status(400).json({msg: 'Não informado o id do DocPadrao!'})
+ 
+    if (adm_id) { //Então QUEM ESTÁ CRIANDO é um ADM
+      identificador_doc = await geraidentificadorDoc(docPadrao_id, adm_id, docPadrao)
       documentoNovo = await Documento
         .create({
-          identificador_doc,camposObj, adm: adm_id, funcionario: adm_id, docPadrao: documento_id,
+          identificador_doc,camposObj, adm: adm_id, funcionario: adm_id, docPadrao: docPadrao_id,
           arquivos: filenames
         })
         .catch(e => {
@@ -143,10 +175,10 @@ module.exports = {
         //console.log(adm_id)
       }
       //Mandando como funcionário
-      identificador_doc = await geraidentificadorDoc(documento_id, adm_id, docPadrao)
+      identificador_doc = await geraidentificadorDoc(docPadrao_id, adm_id, docPadrao)
       documentoNovo = await Documento
         .create({ identificador_doc, camposObj, adm: adm_id, funcionario: func_id, 
-          docPadrao: documento_id, arquivos: filenames })
+          docPadrao: docPadrao_id, arquivos: filenames })
         .catch(e => {
           console.log(e)
           return res.status(400).json({ error: 'Erro ao criar documento' })
@@ -160,9 +192,10 @@ module.exports = {
 
   async destroy(req, res) {
     const { documento_id } = req.params
+    const adm_id = req.adm_id
     let documentos
     if (documento_id) { //DELETA 1
-      documentos = await Documento.findByIdAndDelete(documento_id).populate('docPadrao')
+      documentos = await Documento.findOneAndDelete({_id: documento_id, adm: adm_id}).populate('docPadrao')
         .catch(e => res.status(400).json({ error: 'Algo deu errado ao deletar' }))
 
       return res.json(documentos)
@@ -177,16 +210,7 @@ module.exports = {
 
   },
   async update(req, res) {
-    const { adm_id } = req.headers
-    const adm = await Adm.findById(adm_id)
-      .catch(e => {
-        console.error(e)
-        return res.status(400).json({ error: 'Houve algum erro com o adm' })
-      })
-    if (!adm) {
-      return res.status(400).json({ error: 'Erro de autenticacao' })
-    }
-
+    const adm_id = req.adm_id
     const { documento_id } = req.params
     const camposObj = req.body
     if (req.files) {
@@ -197,7 +221,7 @@ module.exports = {
     //console.log(camposObj) 
     //console.log(req.files)
 
-    let documentos = await Documento.findById(documento_id)
+    let documentos = await Documento.findOne({_id: documento_id, adm: adm_id})
       .catch(e => {
         //console.log(e)
         return res.status(400).json({ error: 'Documento nao encontrado!' }

@@ -11,10 +11,10 @@ function Header3DBack(props) {
 
   useEffect(()=>{
     if (props.adm) {
-      console.log('é adm')
+      // console.log('é adm')
       setBackTo('/menu')
     } else if (props.backTo) {
-        console.log('é func')
+        // console.log('é func')
         setBackTo(props.backTo)
     } else {
       setBackTo('/')
@@ -22,8 +22,6 @@ function Header3DBack(props) {
   },[])
   
   
-  
-
   function handleHideModal() {
     setShowModal(false)
   }

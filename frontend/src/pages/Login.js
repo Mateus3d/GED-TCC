@@ -1,37 +1,53 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PlusCircle, CheckCircle } from 'react-feather'
 import { Link, useHistory } from 'react-router-dom'
 import api from '../services/api'
-
 import '../styles/login.css'
+import utils from '../Utils'
+import { Context } from '../context/AuthContext'
 
 function Login() {
   const [username, setUsername] = useState('')
   const [senha, setSenha] = useState('')
-
+  const { authenticated, setAuthenticated, setLoading/*, handleLogin*/ } = useContext(Context)
   const history = useHistory()
 
   useEffect(()=>{
-    localStorage.clear()
-  })
+    // localStorage.clear()
+    // api.defaults.headers.Authorization = undefined
+    // setAuthenticated(false)
+    // console.log('Autenticado:', authenticated)
+  }/*,[authenticated]*/)
 
   function handleSubmit(e) {
     e.preventDefault()
     const data = {username,senha}
+    // handleLogin(data)
     api.post('/login', data)
         .then((response) => {
           alert('Bem vindo!')
-          localStorage.setItem('user', response.data.id)
-          //console.log(response.data) //Aqui tem o id e adm =true ou false
-          if (response.data.adm){
-            localStorage.setItem('adm',true) //Sei que não é o mais seguro, mas é um protótipó
+          // localStorage.setItem('user', response.data.id)
+          console.log(response.data) //Aqui tem o id e adm =true ou false
+          const jwt = response.data.token
+          localStorage.setItem('jwt', JSON.stringify(jwt))
+          const isAdm = utils.parseRawJwt(jwt).adm
+          // handleLogin(data)
+          setAuthenticated(true)
+          // console.log('Autenticado:', authenticated)
+          setLoading(false)
+          api.defaults.headers.Authorization = `Bearer ${jwt}`
+          // console.log(isAdm)
+          if (isAdm){
             history.push('/menu')
           } else {
-            localStorage.setItem('adm',false)
             history.push('/documentos')
           }
         })
         .catch(e => {
+          setAuthenticated(false)
+          setLoading(false)
+          history.push('/')
+          // console.log('Autenticado:', authenticated)
           alert('Usuário ou senha incorretos!')
         })
   }

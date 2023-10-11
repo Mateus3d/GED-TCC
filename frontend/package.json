@@ -8,13 +8,14 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.0",
     "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
     "dateformat": "^4.0.0",
     "pdfkit": "^0.11.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-feather": "^2.0.8",
+    "react-feather": "^2.0.10",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -40,5 +41,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@webpack-cli/generators": "^3.0.7",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
   }
 }

@@ -18,12 +18,13 @@ function Cadastro() {
       return alert('Todos os campos são obrigatórios!')
     if (senha !== confirmSenha)
       return alert('A senha deve ser a mesma em confirmar senha!')   
-      api.post('/adms',data).then(()=>{ //Envio da requisição
-        alert('Cadastrado com sucesso!')
-        history.push('/') //Redireciona o usuário para tela de login
-      }).catch(e => {
-        alert(`Erro ao cadastrar!\n${e.response.data.error}`)
-      })
+    
+    api.post('/adms',data).then(()=>{ //Envio da requisição
+      alert('Cadastrado com sucesso!')
+      history.push('/') //Redireciona o usuário para tela de login
+    }).catch(e => {
+      alert(`Erro ao cadastrar!\n${e.response.data.error}`)
+    })
   }
   return ( //Daqui em diante é estrutura HTML
     <div id='page-cadastro'>

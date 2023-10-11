@@ -55,7 +55,6 @@ module.exports = {
     const arquivos = req.files
     const { documento } = req.body //id do documento q tem os arquivos
     let hashs
-
     if (arquivos) {
       hashs = arquivos.map(arq => {
         let teste = fs.readFileSync(arq.path, 'base64')
@@ -97,9 +96,9 @@ module.exports = {
     } else {//Se é null é pq não encontrou
       return res.json({ message: 'Não encontrei pra deletar...' })
     }
-  }
+  },
 
-   /*async destroy(req, res) { //Deleta tudo!!!!!!!!!!!!!!!
+   async destroyAll(req, res) { //Deleta tudo!!!!!!!!!!!!!!!
     const hashs = await Hash.find()
 
     hashs.map(async hash => {
@@ -111,6 +110,6 @@ module.exports = {
     })
 
     return res.json({ message: 'Deletado tudo com sucesso' })
-  } */
+  } 
 
 }

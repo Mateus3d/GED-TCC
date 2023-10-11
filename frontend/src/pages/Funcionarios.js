@@ -4,6 +4,7 @@ import Header3DBack from '../components/Header3DBack';
 import LinhaFuncionario from '../components/LinhaFuncionario';
 import api from '../services/api';
 import '../styles/funcionarios.css'
+import { parseJwt } from '../Utils';
 
 function Funcionarios() {
   const [camposUTF, setCamposUTF] = useState(['ID', 'Nome Funcionário', 'Área', 'Login'])
@@ -27,7 +28,7 @@ function Funcionarios() {
 
   async function handleUpdateListaFunc() {
     //const tamanho = listaFuncionarios.length
-    const adm_id = localStorage.getItem('user')
+    const adm_id = parseJwt().sub
     api.get('/funcionarios', { headers: { adm_id }, params: searchParams })
       .then(res => {
         setListaFuncionarios(res.data.reverse())
@@ -69,7 +70,7 @@ function Funcionarios() {
           {listaFuncionarios.map((linha, i) => {
             return (
               <LinhaFuncionario key={linha._id} id={linha._id} ident={linha.identificador} nome={linha.nome}
-                area={linha.area} login={linha.username} senha={linha.senha}
+                area={linha.area} login={linha.username} senha=''/*{linha.senha}*/
                 handleUpdateListaFunc={handleUpdateListaFunc} //removeNovoFunc={handlRemoveNovoFunc}
               />)
           })}

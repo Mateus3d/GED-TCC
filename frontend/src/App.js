@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Routes from './routes';
-
+import { AuthProvider } from './context/AuthContext';
 //import Login from './pages/Login';
 //import Cadastro from './pages/Cadastro';
 //import Verificacao from './pages/Verificacao';
@@ -31,7 +31,9 @@ function App() {
     //<AddDocumento />
     //<ModalSearch /> //TEMPORÁRIO
     //<ModalAddDocument /> //Temporario
-    <Routes />
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
   );
 }
 

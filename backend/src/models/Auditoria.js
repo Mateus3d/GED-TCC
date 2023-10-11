@@ -12,6 +12,10 @@ const AuditoriaSchema = new mongoose.Schema({
 			type: Date,
 			default: Date.now
 		}, 
+    adm: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Adm'
+    },
 })
 
 module.exports = mongoose.model('Auditoria', AuditoriaSchema)

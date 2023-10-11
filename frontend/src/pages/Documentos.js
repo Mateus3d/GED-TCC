@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PlusCircle } from 'react-feather';
 import Header3DBack from '../components/Header3DBack';
 import LinhaDocumento from '../components/LinhaDocumento';
@@ -6,6 +6,8 @@ import ModalAddDocument from '../components/ModalAddDocument';
 import dateFormat from 'dateformat'
 import api from '../services/api';
 import '../styles/documentos.css'
+import { parseJwt } from '../Utils';
+import { Context } from '../context/AuthContext';
 
 //A confirmação ou negação serão feitos nessa tela mesma posteriormente
 //Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
@@ -13,7 +15,8 @@ function Documentos() {
   const [showAddDoc, setShowAddDoc] = useState(false)
   const [documentos, setDocumentos] = useState([])
   const [docsPadrao, setDocsPadrao] = useState([])
-  const [admBool, setAdmBool] = useState(false)
+  const isAdm = parseJwt().adm
+  // console.log('isAdm (Documentos)',isAdm)
   const [searchParams, setSearchParams] = useState('')
 
   const [camposUTF, setCamposUTF] = useState(['ID', 'Título', 'Descrição', 'Data'])
@@ -21,11 +24,9 @@ function Documentos() {
   let adm_id
 
   useEffect(() => {
-    const adm = localStorage.getItem('adm')
-    const func_id = localStorage.getItem('user')
+    const func_id = parseJwt().sub
 
-    if (adm === 'true') {
-      setAdmBool(true)
+    if (isAdm) {
       adm_id = func_id
       api.get('/docPadrao', { headers: { adm_id } }).then(res => {
         setDocsPadrao(res.data)
@@ -37,7 +38,6 @@ function Documentos() {
         }).catch(e => { console.error('error: ', e) })
     }
     else {
-      setAdmBool(false)
       api.get('/docPadrao', { headers: { func_id } }).then(res => {
         setDocsPadrao(res.data)
       }).catch(e => { console.error('error: ', e) })
@@ -60,15 +60,14 @@ function Documentos() {
 
     //console.log(searchParams)
     console.log(documentos)
-    console.log()
   }, [documentos.length, searchParams])
 
 
 
   async function handleRemoveDocumento(documento_id) {
     let identificador_doc = '', titulo_doc = '', area_doc
-    const adm_id = localStorage.getItem('user')
-    if (admBool) {
+    const adm_id = parseJwt().sub
+    if (isAdm) {
       await api.delete(`/documentos/${documento_id}`)
         .then(async res => {
           alert('Documento Apagado!')
@@ -127,10 +126,11 @@ function Documentos() {
   return (
     <div id='page-documentos'>
       <ModalAddDocument show={showAddDoc} hide={handleHideModal} docs={docsPadrao} />
-      {/* Tem q colocar as props (ô passando errado, tem q ser os docs padrao não os preenchidos*/}
+      {/* Tem q colocar as props (tô passando errado, tem q ser os docs padrao não os preenchidos*/}
 
-      <Header3DBack title='Documentos' search={true} adm={localStorage.getItem('adm') === 'true'} backTo='/'
-        campos={campos} camposUTF={camposUTF} handleSearch={handleSearch} />
+      <Header3DBack title='Documentos' search={true} adm={isAdm} backTo='/'
+        campos={campos} camposUTF={camposUTF} handleSearch={handleSearch} 
+        backFunc={() => {!isAdm ? localStorage.clear() : null}}/>
       <div className='container'>
         <main className='main-content'>
           <div className="row-title">
@@ -153,7 +153,7 @@ function Documentos() {
               descricao={item.docPadrao.descricao}
               data={dateFormat(item.data, "dd/mm/yyyy")}
               camposObj={documentos[i].camposObj}
-              adm={admBool}
+              adm={isAdm}
               remove={() => handleRemoveDocumento(item._id)}
             />)
           })

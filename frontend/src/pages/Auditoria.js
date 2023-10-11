@@ -4,6 +4,7 @@ import Header3DBack from '../components/Header3DBack';
 import api from '../services/api';
 import dateFormat from 'dateformat'
 import '../styles/auditoria.css'
+import { parseJwt } from '../Utils';
 
 //A confirmação ou negação serão feitos nessa tela mesma posteriormente
 //Tendo ainda q adicionar o CheckCircle, XCircle e a msg!!!!!!
@@ -19,7 +20,7 @@ function Auditoria() {
   }
 
   useEffect(() => {
-    const adm_id = localStorage.getItem('user')
+    const adm_id = parseJwt.sub
     api.get('/auditoria', { headers: { adm_id }, params: searchParams })
       .then(res => {
         setListaAudit(res.data.reverse())
